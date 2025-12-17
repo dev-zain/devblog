@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 
 class Post(models.Model):
-    STAUS_CHOICES = [
+    STATUS_CHOICES = [
         ('draft', 'Draft'), 
         ('published', 'Published'),
     ]
@@ -12,7 +12,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STAUS_CHOICES, default='draft')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
