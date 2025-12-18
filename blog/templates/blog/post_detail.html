@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - DevBlog{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Post Header -->
+        <h1 class="mb-3">{{ post.title }}</h1>
+        
+        <p class="text-muted">
+            By <strong>{{ post.author.username }}</strong> | 
+            {{ post.created_at|date:"F d, Y" }}
+        </p>
+        
+        <hr>
+        
+        <!-- Post Image -->
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="img-fluid mb-4 rounded" alt="{{ post.title }}">
+        {% endif %}
+        
+        <!-- Post Content -->
+        <div class="post-content mb-5">
+            {{ post.content|linebreaks }}
+        </div>
+        
+        <hr>
+        
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h3 class="mb-4">
+                Comments ({{ comments.count }})
+            </h3>
+            
+            {% if comments %}
+                {% for comment in comments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ comment.author.username }} • 
+                            {{ comment.created_at|date:"F d, Y - g:i A" }}
+                        </h6>
+                        <p class="card-text">{{ comment.content|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No comments yet. Be the first to comment! </p>
+            {% endif %}
+            
+            <!-- Comment Form Placeholder -->
+            <div class="alert alert-info mt-4">
+                <p class="mb-0">💡 Login to leave a comment (coming in Step 7! )</p>
+            </div>
+        </div>
+        
+        <!-- Back Button -->
+        <div class="mt-5">
+            <a href="{% url 'blog:post_list' %}" class="btn btn-secondary">
+                ← Back to All Posts
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
