@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}My Posts - DevBlog{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Posts</h2>
+            <a href="{% url 'blog:post_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Post
+            </a>
+        </div>
+
+        <!-- Published Posts -->
+        <div class="mb-5">
+            <h3 class="mb-3">Published Posts ({{ published_posts.count }})</h3>
+            
+            {% if published_posts %}
+            <div class="row">
+                {% for post in published_posts %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text text-muted small">
+                                {{ post.created_at|date:"F d, Y" }}
+                            </p>
+                            <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                                <a href="{% url 'blog:post_edit' post.slug %}" class="btn btn-sm btn-outline-secondary">
+                                    Edit
+                                </a>
+                                <a href="{% url 'blog:post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                You haven't published any posts yet. 
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Draft Posts -->
+        <div class="mb-5">
+            <h3 class="mb-3">Draft Posts ({{ draft_posts.count }})</h3>
+            
+            {% if draft_posts %}
+            <div class="row">
+                {% for post in draft_posts %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-warning">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ post.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="badge bg-warning text-dark mb-2">Draft</span>
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text text-muted small">
+                                {{ post.created_at|date:"F d, Y" }}
+                            </p>
+                            <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'blog:post_edit' post.slug %}" class="btn btn-sm btn-outline-secondary">
+                                    Edit
+                                </a>
+                                <a href="{% url 'blog:post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                You have no draft posts.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

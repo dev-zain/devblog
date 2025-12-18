@@ -1,8 +1,13 @@
 from django.urls import path
-from . import views
+from .  import views
 
-app_name = "blog"
+app_name = 'blog'
+
 urlpatterns = [
-    path("", views.post_list, name="post_list"),
-    path("post/<slug:slug>/", views.post_detail, name="post_detail"),
+    path('', views.post_list, name='post_list'),
+    path('my-posts/', views.my_posts, name='my_posts'),              # ← Specific! 
+    path('post/create/', views.post_create, name='post_create'),     # ← Specific!
+    path('post/<slug:slug>/', views.post_detail, name='post_detail'), # ← General (last!)
+    path('post/<slug:slug>/edit/', views.post_edit, name='post_edit'),
+    path('post/<slug:slug>/delete/', views.post_delete, name='post_delete'),
 ]

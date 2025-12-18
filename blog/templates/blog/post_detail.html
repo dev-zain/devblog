@@ -3,64 +3,75 @@
 {% block title %}{{ post.title }} - DevBlog{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <!-- Post Header -->
-        <h1 class="mb-3">{{ post.title }}</h1>
-        
-        <p class="text-muted">
-            By <strong>{{ post.author.username }}</strong> | 
-            {{ post.created_at|date:"F d, Y" }}
-        </p>
-        
-        <hr>
-        
-        <!-- Post Image -->
-        {% if post.image %}
-        <img src="{{ post.image.url }}" class="img-fluid mb-4 rounded" alt="{{ post.title }}">
-        {% endif %}
-        
-        <!-- Post Content -->
-        <div class="post-content mb-5">
-            {{ post.content|linebreaks }}
-        </div>
-        
-        <hr>
-        
-        <!-- Comments Section -->
-        <div class="comments-section">
-            <h3 class="mb-4">
-                Comments ({{ comments.count }})
-            </h3>
-            
-            {% if comments %}
-                {% for comment in comments %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            {{ comment.author.username }} • 
-                            {{ comment.created_at|date:"F d, Y - g:i A" }}
-                        </h6>
-                        <p class="card-text">{{ comment.content|linebreaks }}</p>
-                    </div>
+<article>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Post Header -->
+            <header class="mb-4">
+                <h1 class="fw-bold mb-3">{{ post.title }}</h1>
+                <div class="text-muted mb-3">
+                    <span>By <strong>{{ post.author.username }}</strong></span> • 
+                    <span>{{ post.created_at|date:"F d, Y" }}</span>
+                    {% if post.updated_at != post.created_at %}
+                    <span>• Updated {{ post.updated_at|date:"F d, Y" }}</span>
+                    {% endif %}
                 </div>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">No comments yet. Be the first to comment! </p>
+                
+                <!-- Edit/Delete buttons for author -->
+                {% if user == post.author %}
+                <div class="mb-3">
+                    <a href="{% url 'blog:post_edit' post.slug %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-pencil"></i> Edit Post
+                    </a>
+                    <a href="{% url 'blog:post_delete' post.slug %}" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Delete Post
+                    </a>
+                </div>
+                {% endif %}
+            </header>
+
+            <!-- Featured Image -->
+            {% if post.image %}
+            <figure class="mb-4">
+                <img src="{{ post.image.url }}" class="img-fluid rounded" alt="{{ post.title }}">
+            </figure>
             {% endif %}
-            
-            <!-- Comment Form Placeholder -->
-            <div class="alert alert-info mt-4">
-                <p class="mb-0">💡 Login to leave a comment (coming in Step 7! )</p>
+
+            <!-- Post Content -->
+            <div class="mb-5">
+                {{ post.content|linebreaks }}
+            </div>
+
+            <hr>
+
+            <!-- Comments Section -->
+            <section class="mb-5">
+                <h3 class="mb-4">Comments ({{ comments.count }})</h3>
+                
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">{{ comment.author.username }}</h6>
+                                <small class="text-muted">{{ comment.created_at|date:"F d, Y" }}</small>
+                            </div>
+                            <p class="mb-0">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No comments yet. Be the first to comment! </p>
+                {% endif %}
+            </section>
+
+            <!-- Back to Posts -->
+            <div class="mb-4">
+                <a href="{% url 'blog:post_list' %}" class="btn btn-outline-primary">
+                    ← Back to Posts
+                </a>
             </div>
         </div>
-        
-        <!-- Back Button -->
-        <div class="mt-5">
-            <a href="{% url 'blog:post_list' %}" class="btn btn-secondary">
-                ← Back to All Posts
-            </a>
-        </div>
     </div>
-</div>
+</article>
 {% endblock %}
