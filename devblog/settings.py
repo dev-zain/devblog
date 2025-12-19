@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
+
 
     "blog",
     "core",
@@ -129,6 +131,19 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+
+# Email Configuration (Console Backend for Development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+DEFAULT_FROM_EMAIL = 'noreply@devblog.com'
+
+# Account Settings
+ACCOUNT_ACTIVATION_DAYS = 7  # Users have 7 days to activate their account
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'blog:post_list'
+LOGOUT_REDIRECT_URL = 'blog:post_list'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -138,3 +153,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = 'blog:post_list'
 LOGIN_URL = 'accounts:login'
 LOGOUT_REDIRECT_URL = 'blog:post_list'
+
+# Site ID (required for django. contrib.sites)
+SITE_ID = 1

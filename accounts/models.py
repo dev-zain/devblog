@@ -7,6 +7,7 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     location = models.CharField(max_length=100, blank=True)
+    email_verified = models.BooleanField(default=False)
     website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

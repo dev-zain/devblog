@@ -37,7 +37,15 @@
                         </div>
                         {% endif %}
                     </div>
-                    
+
+                    <!-- Forgot password link: add it directly after the password field -->
+                    <div class="text-end mb-3">
+                        <a href="{% url 'accounts:password_reset' %}" class="small text-decoration-none">
+                            Forgot password?
+                        </a>
+                    </div>
+                    <!-- End forgot password link -->
+
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>
                 

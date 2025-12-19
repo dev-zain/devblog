@@ -5,9 +5,9 @@ app_name = 'blog'
 
 urlpatterns = [
     path('', views.post_list, name='post_list'),
-    path('my-posts/', views.my_posts, name='my_posts'),              # ← Specific! 
-    path('post/create/', views.post_create, name='post_create'),     # ← Specific!
-    path('post/<slug:slug>/', views.post_detail, name='post_detail'), # ← General (last!)
+    path('my-posts/', views.my_posts, name='my_posts'),               
+    path('post/create/', views.post_create, name='post_create'),     
+    path('post/<slug:slug>/', views.post_detail, name='post_detail'), 
     path('post/<slug:slug>/edit/', views.post_edit, name='post_edit'),
     path('post/<slug:slug>/delete/', views.post_delete, name='post_delete'),
 ]
