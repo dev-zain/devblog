@@ -17,7 +17,7 @@ class PostForm(forms.ModelForm):
     
     class Meta: 
         model = Post
-        fields = ['title', 'content', 'image', 'category', 'status']
+        fields = ['title', 'content', 'image', 'category', 'is_featured', 'status']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -34,6 +34,8 @@ class PostForm(forms.ModelForm):
             'category': forms.Select(attrs={
                 'class': 'form-control'
             }),
+
+
             'status': forms.Select(attrs={
                 'class': 'form-control'
             })

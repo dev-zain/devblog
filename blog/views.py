@@ -56,9 +56,16 @@ def post_list(request):
     recent_posts_count = recent_posts_qs.count()
     
     # Most liked posts (order by like_count, excluding explicitly featured only)
-    most_liked_posts_qs = Post.objects.filter(
-        status='published'
-    ).exclude(id__in=featured_ids).select_related('author').order_by('-like_count', '-created_at')
+    from django.db.models import Count
+
+    most_liked_posts_qs = (
+        Post.objects.filter(status='published')
+        
+        .select_related('author')
+        .annotate(likes_total=Count('likes'))
+        .filter(likes_total__gt=0)
+        .order_by('-likes_total', '-created_at')
+    )
     most_liked_posts = most_liked_posts_qs[:6]
     most_liked_posts_count = most_liked_posts_qs.count()
     

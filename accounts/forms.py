@@ -62,6 +62,13 @@ class SignUpForm(UserCreationForm):
                 raise forms.ValidationError("A user with that username already exists.")
         return username
     
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return email
+
+    
     def save(self, commit=True):
         """Save user with lowercase username"""
         user = super().save(commit=False)
