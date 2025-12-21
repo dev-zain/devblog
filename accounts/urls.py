@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/edit/', views.profile_edit_view, name='profile_edit'),
     path('profile/<str:username>/', views.profile_view, name='profile'),
+    path('profile/<str:username>/posts/', views.user_posts_view, name='user_posts'),
 
     # Email verification
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
@@ -21,6 +22,7 @@ urlpatterns = [
         auth_views.PasswordResetView.as_view(
             template_name='accounts/password_reset.html',
             email_template_name='accounts/password_reset_email.html',
+            html_email_template_name='accounts/password_reset_email.html',
             subject_template_name='accounts/password_reset_subject.txt',
             success_url=reverse_lazy('accounts:password_reset_done'),
         ),

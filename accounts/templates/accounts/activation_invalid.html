@@ -3,26 +3,27 @@
 {% block title %}Invalid Activation Link - DevBlog{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow border-danger">
-            <div class="card-body text-center">
-                <h2 class="card-title mb-4">
-                    <i class="bi bi-x-circle" style="font-size: 3rem; color: #dc3545;"></i>
-                </h2>
-                <h3 class="mb-3">Invalid Activation Link</h3>
-                <p class="mb-4">
-                    The activation link is invalid or has expired.
-                </p>
-                <div class="alert alert-warning">
-                    <p class="mb-0">
-                        Activation links expire after 7 days.
-                    </p>
-                </div>
-                <a href="{% url 'accounts:register' %}" class="btn btn-primary">
-                    Register Again
-                </a>
-            </div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-icon" style="color: var(--danger-color);">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <h2>Invalid Activation Link</h2>
+        
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: var(--spacing-xl);">
+            The activation link is invalid or has expired.
+        </p>
+        
+        <div class="alert alert-warning" style="margin-bottom: var(--spacing-xl);">
+            <i class="fas fa-exclamation-triangle"></i>
+            Activation links expire after 7 days.
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i>
+                Register Again
+            </a>
         </div>
     </div>
 </div>

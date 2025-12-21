@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About DevBlog - What is DevBlog?{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white !important;
+        padding: 4rem 0;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .about-hero * {
+        color: white !important;
+    }
+    
+    .about-hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: white !important;
+    }
+    
+    .about-hero p {
+        font-size: 1.25rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin: 0 auto;
+        color: white !important;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    
+    .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+    
+    .feature-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+    
+    .stats-section {
+        background: var(--bg-secondary);
+        padding: 3rem 0;
+        margin: 3rem 0;
+        border-radius: var(--border-radius-lg);
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .stat-box {
+        padding: 1.5rem;
+    }
+    
+    .stat-box-number {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-box-label {
+        font-size: 1rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-code"></i>
+            What is DevBlog?
+        </h1>
+        <p>
+            DevBlog is a modern, feature-rich blogging platform designed specifically for developers. 
+            Share your knowledge, learn from the community, and build your developer presence.
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+                Our Community in Numbers
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-box-number">{{ total_posts|default:0 }}</div>
+                    <div class="stat-box-label">Published Posts</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-number">{{ total_authors|default:0 }}</div>
+                    <div class="stat-box-label">Active Authors</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-number">{{ total_categories|default:0 }}</div>
+                    <div class="stat-box-label">Categories</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-number">{{ total_tags|default:0 }}</div>
+                    <div class="stat-box-label">Tags</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section style="margin: 4rem 0;">
+        <h2 style="text-align: center; margin-bottom: 3rem; color: var(--text-primary); font-size: 2.5rem;">
+            Platform Features
+        </h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h3>Rich Text Editor</h3>
+                <p>
+                    Create beautiful blog posts with our powerful rich text editor. 
+                    Format text, add images, create lists, and more with an intuitive interface.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-folder"></i>
+                </div>
+                <h3>Categories & Tags</h3>
+                <p>
+                    Organize your content with categories and tags. 
+                    Help readers discover your posts and find related content easily.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Like & Comment</h3>
+                <p>
+                    Engage with the community through likes and threaded comments. 
+                    Build discussions and connect with other developers.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h3>User Profiles</h3>
+                <p>
+                    Create your developer profile with bio, location, website, and avatar. 
+                    Showcase all your published posts in one place.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Advanced Search</h3>
+                <p>
+                    Search through posts by title, content, category, or tags. 
+                    Find exactly what you're looking for quickly and easily.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Featured Posts</h3>
+                <p>
+                    Discover handpicked featured posts on the homepage. 
+                    Get your best content highlighted to reach more readers.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <h3>Image Support</h3>
+                <p>
+                    Upload featured images for your posts. 
+                    Make your content visually appealing and stand out in post listings.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-save"></i>
+                </div>
+                <h3>Draft System</h3>
+                <p>
+                    Save your work as drafts and publish when ready. 
+                    Edit your posts anytime, even after publishing.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Responsive Design</h3>
+                <p>
+                    Access DevBlog from any device. 
+                    Our responsive design ensures a great experience on desktop, tablet, and mobile.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section style="margin: 4rem 0; background: var(--bg-secondary); padding: 3rem; border-radius: var(--border-radius-lg);">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+            How It Works
+        </h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                    <i class="fas fa-user-plus"></i> 1. Create Your Account
+                </h3>
+                <p style="color: var(--text-secondary);">
+                    Sign up for free and create your developer profile. 
+                    Add your bio, location, website, and profile picture to personalize your presence.
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                    <i class="fas fa-pen"></i> 2. Write Your First Post
+                </h3>
+                <p style="color: var(--text-secondary);">
+                    Use our rich text editor to create engaging blog posts. 
+                    Add images, format text, organize with categories and tags, and save as draft or publish immediately.
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                    <i class="fas fa-share"></i> 3. Share & Engage
+                </h3>
+                <p style="color: var(--text-secondary);">
+                    Share your knowledge with the community. 
+                    Get likes, receive comments, and engage in discussions with fellow developers.
+                </p>
+            </div>
+            
+            <div>
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                    <i class="fas fa-chart-line"></i> 4. Build Your Presence
+                </h3>
+                <p style="color: var(--text-secondary);">
+                    Grow your developer brand. 
+                    Showcase your expertise, connect with others, and become part of a thriving developer community.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="text-align: center; margin: 4rem 0; padding: 3rem; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: var(--border-radius-lg); color: white !important;">
+        <h2 style="color: white !important; margin-bottom: 1rem;">
+            Ready to Get Started?
+        </h2>
+        <p style="font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.95; color: white !important;">
+            Join thousands of developers sharing knowledge and building together.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            {% if user.is_authenticated %}
+            <a href="{% url 'blog:post_create' %}" class="btn btn-primary" style="background: white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fas fa-pen"></i>
+                Write Your First Post
+            </a>
+            {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary" style="background: white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fas fa-user-plus"></i>
+                Create Free Account
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </a>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+

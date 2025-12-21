@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Categories - DevBlog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="category-header">
+        <h1 class="category-title">
+            <i class="fas fa-folder"></i> Categories
+        </h1>
+        <p class="category-description">Explore posts organized by category</p>
+    </div>
+
+    {% if category_data %}
+        {% for item in category_data %}
+        <section class="reveal" style="margin-bottom: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.75rem; font-weight: 600;">
+                    <a href="{% url 'blog:category_detail' item.category.slug %}" style="color: var(--blog-text); text-decoration: none;">
+                        {{ item.category.name }}
+                    </a>
+                </h2>
+                <a href="{% url 'blog:category_detail' item.category.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                    Explore all <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            {% if item.category.description %}
+            <p style="color: var(--blog-text-muted); margin-bottom: 1.5rem;">{{ item.category.description }}</p>
+            {% endif %}
+            
+            {% if item.latest_posts %}
+            <div class="posts-grid">
+                {% for post in item.latest_posts %}
+                <article class="post-card reveal">
+                    {% if post.image %}
+                    <a href="{% url 'blog:post_detail' post.slug %}">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'blog:post_detail' post.slug %}">
+                        <div class="post-card-image-placeholder">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </a>
+                    {% endif %}
+                    
+                    <div class="post-card-content">
+                        <div class="post-card-meta">
+                            <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                            <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                            <span class="read-time"><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                        </div>
+                        <h3 class="post-card-title">
+                            <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                        </h3>
+                        <p class="post-card-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                        <div class="post-card-footer">
+                            <a href="{% url 'blog:post_detail' post.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <div class="post-card-stats">
+                                <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                                <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No posts in this category yet.</p>
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-folder-open"></i>
+        </div>
+        <h3>No Categories Yet</h3>
+        <p>Categories will appear here once posts are organized.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}
+

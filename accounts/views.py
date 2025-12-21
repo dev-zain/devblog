@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode  # ← NEW
 from django.utils.encoding import force_str  # ← NEW
+from django.core.paginator import Paginator
+from blog.models import Post
 from . forms import SignUpForm, LoginForm, ProfileUpdateForm, UserUpdateForm
 from . models import Profile
 from . tokens import account_activation_token  # ← NEW
@@ -68,19 +70,23 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            username = form.cleaned_data.get('username')  # Already lowercase from form
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
-                # Check if user is active (email verified)  ← NEW
-                if user.is_active:  # ← NEW
+                # Check if user is active (email verified)
+                if user.is_active:
                     login(request, user)
-                    messages.success(request, f'Welcome back, {username}!')
+                    # Display full name if available, otherwise username
+                    display_name = user.get_full_name() or user.username
+                    messages.success(request, f'Welcome back, {display_name}!')
                     # Redirect to 'next' parameter or homepage
                     next_url = request.GET.get('next', 'blog:post_list')
                     return redirect(next_url)
-                else:  # ← NEW BLOCK
-                    messages.error(request, 'Please activate your account first.  Check your email.')  # ← NEW
+                else:
+                    messages.error(request, 'Please activate your account first. Check your email.')
+            else:
+                messages.error(request, 'Invalid username or password.')
     else:
         form = LoginForm()
     
@@ -98,14 +104,38 @@ def profile_view(request, username):
     """Display user profile (public view)"""
     user = get_object_or_404(User, username=username)
     profile = user.profile
-    posts = user.post_set.filter(status='published').order_by('-created_at')[: 5]
+    # Show only 6 recent posts on profile page
+    posts = user.post_set.filter(status='published').select_related('author', 'category').prefetch_related('tags').order_by('-created_at')[:6]
+    total_posts_count = user.post_set.filter(status='published').count()
     
     context = {
         'profile_user': user,
         'profile': profile,
-        'posts':  posts,
+        'posts': posts,
+        'total_posts_count': total_posts_count,
     }
     return render(request, 'accounts/profile.html', context)
+
+
+def user_posts_view(request, username):
+    """Display all posts by a specific user with pagination"""
+    user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(
+        author=user,
+        status='published'
+    ).select_related('author', 'category').prefetch_related('tags').order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(posts, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'profile_user': user,
+        'page_obj': page_obj,
+        'posts': page_obj,
+    }
+    return render(request, 'accounts/user_posts.html', context)
 
 
 @login_required

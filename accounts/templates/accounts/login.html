@@ -3,60 +3,88 @@
 {% block title %}Login - DevBlog{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Login</h2>
-                
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ form.non_field_errors }}
-                    </div>
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                        {{ form.username }}
-                        {% if form.username.errors %}
-                        <div class="text-danger small">
-                            {{ form.username.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-                        {{ form.password }}
-                        {% if form.password.errors %}
-                        <div class="text-danger small">
-                            {{ form.password.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Forgot password link: add it directly after the password field -->
-                    <div class="text-end mb-3">
-                        <a href="{% url 'accounts:password_reset' %}" class="small text-decoration-none">
-                            Forgot password?
-                        </a>
-                    </div>
-                    <!-- End forgot password link -->
-
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
-                
-                <hr class="my-4">
-                
-                <p class="text-center mb-0">
-                    Don't have an account? 
-                    <a href="{% url 'accounts:register' %}">Register here</a>
-                </p>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-icon">
+            <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <h2>Welcome Back</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger" style="margin-bottom: var(--spacing-lg);">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ form.non_field_errors }}
             </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="form-label">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div class="form-error">
+                    {{ form.username.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}" class="form-label">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <div class="form-error">
+                    {{ form.password.errors }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="text-align: right; margin-bottom: var(--spacing-lg);">
+                <a href="{% url 'accounts:password_reset' %}" class="btn-link" style="font-size: var(--font-size-sm);">
+                    Forgot password?
+                </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-light);">
+            <p style="color: var(--text-muted); margin-bottom: var(--spacing-md);">
+                Don't have an account?
+            </p>
+            <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user-plus"></i>
+                Register here
+            </a>
         </div>
     </div>
 </div>
+
+<style>
+    #id_username, #id_password {
+        width: 100%;
+        padding: var(--spacing-md);
+        background: var(--bg-primary);
+        border: 2px solid var(--border-light);
+        border-radius: var(--border-radius-sm);
+        color: var(--text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-primary);
+        transition: all var(--transition-fast);
+    }
+    
+    #id_username:focus, #id_password:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+</style>
 {% endblock %}

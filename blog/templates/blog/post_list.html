@@ -1,46 +1,371 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - DevBlog{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <h1 class="mb-4">Latest Blog Posts</h1>
-        
-        {% if posts %}
-            {% for post in posts %}
-            <div class="card mb-4 shadow-sm">
-                {% if post.image %}
-                <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
-                {% endif %}
+<div class="homepage-wrapper">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="container">
+            <div class="hero-content reveal">
+                <h1 class="hero-title">
+                    Welcome to <span class="gradient-text">DevBlog</span>
+                </h1>
+                <p class="hero-subtitle">Discover the latest insights, tutorials, and stories from the developer community. Join thousands of developers sharing knowledge and building together.</p>
                 
-                <div class="card-body">
-                    <h2 class="card-title">
-                        <a href="{% url 'blog:post_detail' post.slug %}" class="text-decoration-none text-dark">
-                            {{ post.title }}
-                        </a>
-                    </h2>
-                    
-                    <p class="text-muted small">
-                        By {{ post.author.username }} | {{ post.created_at|date:"F d, Y" }}
-                    </p>
-                    
-                    <p class="card-text">
-                        {{ post.content|truncatewords:50 }}
-                    </p>
-                    
-                    <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-primary">
-                        Read More →
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <form method="get" action="{% url 'blog:search' %}" class="search-form" id="searchForm">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input 
+                                type="search" 
+                                name="q" 
+                                id="searchInput"
+                                class="search-input" 
+                                placeholder="Search posts by title or content..."
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="search-btn" aria-label="Search">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="hero-cta">
+                    <a href="#latest-posts" class="btn btn-primary">
+                        <i class="fas fa-compass"></i>
+                        Explore Posts
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'blog:post_create' %}" class="btn btn-secondary">
+                        <i class="fas fa-pen"></i>
+                        Write a Post
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                        <i class="fas fa-user-plus"></i>
+                        Get Started
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'blog:about' %}" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.1); color: white; border: 2px solid rgba(255, 255, 255, 0.3);">
+                        <i class="fas fa-info-circle"></i>
+                        What is DevBlog?
                     </a>
                 </div>
+
+                <!-- Stats -->
+                <div class="hero-stats reveal">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ total_posts|default:0 }}</div>
+                        <div class="stat-label">Posts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ total_authors|default:0 }}</div>
+                        <div class="stat-label">Authors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ total_likes|default:0 }}</div>
+                        <div class="stat-label">Likes</div>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info">
-                <h4>No posts yet!</h4>
-                <p>Check back soon for new content. </p>
+        </div>
+    </section>
+
+    <!-- Featured Posts Section (Moved to Top) -->
+    {% if featured_posts %}
+    <section id="latest-posts" class="content-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Featured Posts
+                </h2>
+                <p class="section-subtitle">
+                    {% if has_explicit_featured %}
+                        Handpicked stories worth reading
+                    {% else %}
+                        Most popular posts from our community
+                    {% endif %}
+                </p>
             </div>
-        {% endif %}
-    </div>
+            
+            <div class="featured-grid">
+                {% for post in featured_posts %}
+                <article class="featured-card reveal">
+                    {% if post.image %}
+                    <div class="featured-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="featured-image" loading="lazy">
+                            <span class="featured-badge">Featured</span>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="featured-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <div class="post-image-placeholder">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <span class="featured-badge">Featured</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="featured-content">
+                        <div class="featured-meta">
+                            <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                            <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <h3 class="featured-title">
+                            <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                        </h3>
+                        <p class="featured-excerpt">{{ post.content|truncatewords:30|striptags }}</p>
+                        <div class="post-footer">
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <div class="post-stats">
+                                <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                                <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                                <span><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Latest Posts Section -->
+    {% if latest_posts %}
+    <section class="content-section">
+        <div class="container">
+            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+                <div>
+                    <h2 class="section-title">
+                        <i class="fas fa-newspaper"></i>
+                        Latest Posts
+                    </h2>
+                    <p class="section-subtitle">Fresh content from our community</p>
+                </div>
+                {% if latest_posts_count > 6 %}
+                <a href="{% url 'blog:latest_posts' %}" class="btn btn-outline-primary" style="margin-top: 0;">
+                    <i class="fas fa-list"></i>
+                    View All ({{ latest_posts_count }})
+                </a>
+                {% endif %}
+            </div>
+            
+            <div class="latest-grid">
+                {% for post in latest_posts %}
+                <article class="post-card reveal">
+                    {% if post.image %}
+                    <div class="post-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="post-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <div class="post-image-placeholder">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                            <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <h3 class="post-title">
+                            <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                        </h3>
+                        <p class="post-excerpt">{{ post.content|truncatewords:20|striptags }}</p>
+                        <div class="post-footer">
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <div class="post-stats">
+                                <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                                <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                                <span><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recently Uploaded Section -->
+    {% if recent_posts %}
+    <section class="content-section">
+        <div class="container">
+            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+                <div>
+                    <h2 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Recently Uploaded
+                    </h2>
+                    <p class="section-subtitle">Posts from the last 7 days</p>
+                </div>
+                {% if recent_posts_count > 6 %}
+                <a href="{% url 'blog:recent_posts' %}" class="btn btn-outline-primary" style="margin-top: 0;">
+                    <i class="fas fa-list"></i>
+                    View All ({{ recent_posts_count }})
+                </a>
+                {% endif %}
+            </div>
+            
+            <div class="recent-list">
+                {% for post in recent_posts %}
+                <article class="recent-item reveal">
+                    {% if post.image %}
+                    <div class="recent-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="recent-image" loading="lazy">
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="recent-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <div class="post-image-placeholder">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="recent-content">
+                        <div>
+                            <h3 class="recent-title">
+                                <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                            </h3>
+                            <div class="recent-meta">
+                                <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                                <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="recent-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                        </div>
+                        <div class="post-footer">
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Most Liked Posts Section -->
+    {% if most_liked_posts %}
+    <section class="content-section">
+        <div class="container">
+            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+                <div>
+                    <h2 class="section-title">
+                        <i class="fas fa-heart"></i>
+                        Most Liked
+                    </h2>
+                    <p class="section-subtitle">Popular posts loved by the community</p>
+                </div>
+                {% if most_liked_posts_count > 6 %}
+                <a href="{% url 'blog:most_liked_posts' %}" class="btn btn-outline-primary" style="margin-top: 0;">
+                    <i class="fas fa-list"></i>
+                    View All ({{ most_liked_posts_count }})
+                </a>
+                {% endif %}
+            </div>
+            
+            <div class="most-liked-grid">
+                {% for post in most_liked_posts %}
+                <article class="post-card reveal">
+                    {% if post.image %}
+                    <div class="post-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="post-image-wrapper">
+                        <a href="{% url 'blog:post_detail' post.slug %}">
+                            <div class="post-image-placeholder">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                            <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <h3 class="post-title">
+                            <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                        </h3>
+                        <p class="post-excerpt">{{ post.content|truncatewords:20|striptags }}</p>
+                        <div class="post-footer">
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <div class="post-stats">
+                                <span class="like-badge">
+                                    <i class="fas fa-heart"></i> {{ post.likes.count }}
+                                </span>
+                                <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                                <span><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Empty State (if no posts at all) -->
+    {% if not featured_posts and not latest_posts and not recent_posts and not most_liked_posts %}
+    <section class="content-section">
+        <div class="container">
+            <div class="empty-state reveal">
+                <div class="empty-state-icon">
+                    <i class="fas fa-blog"></i>
+                </div>
+                <h3>No Posts Yet</h3>
+                <p>There are no published posts at the moment. Check back soon for new content!</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'blog:post_create' %}" class="read-more-btn" style="display: inline-flex; padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border-radius: var(--radius-sm);">
+                    <i class="fas fa-plus-circle"></i> Create Your First Post
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

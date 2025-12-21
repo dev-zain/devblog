@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search{% if query %}: {{ query }}{% endif %} - DevBlog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="search-header">
+        <h1 class="search-query">
+            <i class="fas fa-search"></i>
+            {% if query %}
+                Search Results for "{{ query }}"
+            {% else %}
+                Search Posts
+            {% endif %}
+        </h1>
+        {% if query %}
+        <p class="search-count">{{ count }} result{{ count|pluralize }} found</p>
+        {% endif %}
+        
+        <!-- Search Form -->
+        <form method="get" action="{% url 'blog:search' %}" style="margin-top: 1.5rem; max-width: 600px;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="search" name="q" value="{{ query }}" placeholder="Search posts..." style="flex: 1; padding: 0.75rem; border: 1px solid var(--blog-border); border-radius: 8px; font-size: 1rem;" required>
+                <button type="submit" style="padding: 0.75rem 1.5rem; background: var(--blog-primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if query %}
+        {% if page_obj %}
+        <div class="posts-grid search-results">
+            {% for post in page_obj %}
+            <article class="post-card reveal">
+                {% if post.image %}
+                <a href="{% url 'blog:post_detail' post.slug %}">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+                </a>
+                {% else %}
+                <a href="{% url 'blog:post_detail' post.slug %}">
+                    <div class="post-card-image-placeholder">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </a>
+                {% endif %}
+                
+                <div class="post-card-content">
+                    <div class="post-card-meta">
+                        <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                        <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                        <span class="read-time"><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                    </div>
+                    <h3 class="post-card-title">
+                        <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                    </h3>
+                    {% if post.category %}
+                    <div style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'blog:category_detail' post.category.slug %}" class="category-badge">
+                            {{ post.category.name }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    <p class="post-card-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                    <div class="post-card-footer">
+                        <a href="{% url 'blog:post_detail' post.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <div class="post-card-stats">
+                            <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                            <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i> Previous</a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="current">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Next <i class="fas fa-chevron-right"></i></a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>No Results Found</h3>
+            <p>Try different keywords or browse our categories.</p>
+            <a href="{% url 'blog:category_list' %}" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: var(--blog-primary); color: white; text-decoration: none; border-radius: 8px;">
+                Browse Categories
+            </a>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3>Search Posts</h3>
+        <p>Enter keywords to search for posts by title, content, category, or tags.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}
+

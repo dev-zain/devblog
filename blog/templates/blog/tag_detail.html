@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ tag.name }} - DevBlog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="tag-header">
+        <h1 class="tag-title">
+            <i class="fas fa-tag"></i> {{ tag.name }}
+        </h1>
+        <a href="{% url 'blog:post_list' %}" style="color: var(--blog-primary); text-decoration: none; margin-top: 1rem; display: inline-block;">
+            <i class="fas fa-arrow-left"></i> Back to Posts
+        </a>
+    </div>
+
+    {% if posts %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        <article class="post-card reveal">
+            {% if post.image %}
+            <a href="{% url 'blog:post_detail' post.slug %}">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+            </a>
+            {% else %}
+            <a href="{% url 'blog:post_detail' post.slug %}">
+                <div class="post-card-image-placeholder">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </a>
+            {% endif %}
+            
+            <div class="post-card-content">
+                <div class="post-card-meta">
+                    <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
+                    <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                    <span class="read-time"><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                </div>
+                <h3 class="post-card-title">
+                    <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                </h3>
+                <p class="post-card-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                <div class="post-card-footer">
+                    <a href="{% url 'blog:post_detail' post.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <div class="post-card-stats">
+                        <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                        <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i> Previous</a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next <i class="fas fa-chevron-right"></i></a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <h3>No Posts Yet</h3>
+        <p>There are no published posts with this tag yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}
+

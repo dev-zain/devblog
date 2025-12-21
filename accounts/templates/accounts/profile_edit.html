@@ -3,94 +3,171 @@
 {% block title %}Edit Profile - DevBlog{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title mb-4">Edit Profile</h2>
+<div class="container">
+    <div class="auth-card" style="max-width: 700px; margin: var(--spacing-2xl) auto;">
+        <h2>
+            <i class="fas fa-user-edit"></i>
+            Edit Profile
+        </h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: var(--spacing-xl);">
+                <h4 style="color: var(--text-primary); margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-light);">
+                    <i class="fas fa-user-circle"></i>
+                    Account Information
+                </h4>
                 
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <h5 class="mb-3">Account Information</h5>
-                    
-                    <div class="mb-3">
-                        <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
-                        {{ user_form.username }}
-                        {% if user_form.username.errors %}
-                        <div class="text-danger small">
-                            {{ user_form.username.errors }}
-                        </div>
-                        {% endif %}
+                <div class="form-group">
+                    <label for="{{ user_form.username.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    {{ user_form.username }}
+                    {% if user_form.username.errors %}
+                    <div class="form-error">
+                        {{ user_form.username.errors }}
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
-                        {{ user_form.email }}
-                        {% if user_form.email.errors %}
-                        <div class="text-danger small">
-                            {{ user_form.email.errors }}
-                        </div>
-                        {% endif %}
+                    {% endif %}
+                    <div class="form-text">
+                        Username will be converted to lowercase automatically.
                     </div>
-                    
-                    <hr class="my-4">
-                    
-                    <h5 class="mb-3">Profile Information</h5>
-                    
-                    <div class="mb-3">
-                        <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">Profile Picture</label>
-                        {% if request.user.profile.avatar %}
-                        <div class="mb-2">
-                            <img src="{{ request.user.profile.avatar.url }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="Current avatar">
-                            <p class="text-muted small mt-2">Current profile picture</p>
-                        </div>
-                        {% endif %}
-                        {{ profile_form.avatar }}
-                        {% if profile_form.avatar.errors %}
-                        <div class="text-danger small">
-                            {{ profile_form.avatar.errors }}
-                        </div>
-                        {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> First Name
+                    </label>
+                    {{ user_form.first_name }}
+                    {% if user_form.first_name.errors %}
+                    <div class="form-error">
+                        {{ user_form.first_name.errors }}
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ profile_form.bio.id_for_label }}" class="form-label">Bio</label>
-                        {{ profile_form.bio }}
-                        {% if profile_form.bio.errors %}
-                        <div class="text-danger small">
-                            {{ profile_form.bio.errors }}
-                        </div>
-                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
+                        <i class="fas fa-user"></i> Last Name
+                    </label>
+                    {{ user_form.last_name }}
+                    {% if user_form.last_name.errors %}
+                    <div class="form-error">
+                        {{ user_form.last_name.errors }}
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ profile_form.location.id_for_label }}" class="form-label">Location</label>
-                        {{ profile_form.location }}
-                        {% if profile_form.location.errors %}
-                        <div class="text-danger small">
-                            {{ profile_form.location.errors }}
-                        </div>
-                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ user_form.email.id_for_label }}" class="form-label">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    {{ user_form.email }}
+                    {% if user_form.email.errors %}
+                    <div class="form-error">
+                        {{ user_form.email.errors }}
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ profile_form.website.id_for_label }}" class="form-label">Website</label>
-                        {{ profile_form.website }}
-                        {% if profile_form.website.errors %}
-                        <div class="text-danger small">
-                            {{ profile_form.website.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <a href="{% url 'accounts:profile' request.user.username %}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </form>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+            
+            <div>
+                <h4 style="color: var(--text-primary); margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--border-light);">
+                    <i class="fas fa-id-card"></i>
+                    Profile Information
+                </h4>
+                
+                <div class="form-group">
+                    <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i> Profile Picture
+                    </label>
+                    {% if request.user.profile.avatar %}
+                    <div style="margin-bottom: var(--spacing-md);">
+                        <img src="{{ request.user.profile.avatar.url }}" class="profile-avatar-placeholder" style="width: 100px; height: 100px; font-size: 2rem;" alt="Current avatar">
+                        <p class="form-text">Current profile picture</p>
+                    </div>
+                    {% endif %}
+                    {{ profile_form.avatar }}
+                    {% if profile_form.avatar.errors %}
+                    <div class="form-error">
+                        {{ profile_form.avatar.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ profile_form.bio.id_for_label }}" class="form-label">
+                        <i class="fas fa-quote-left"></i> Bio
+                    </label>
+                    {{ profile_form.bio }}
+                    {% if profile_form.bio.errors %}
+                    <div class="form-error">
+                        {{ profile_form.bio.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ profile_form.location.id_for_label }}" class="form-label">
+                        <i class="fas fa-map-marker-alt"></i> Location
+                    </label>
+                    {{ profile_form.location }}
+                    {% if profile_form.location.errors %}
+                    <div class="form-error">
+                        {{ profile_form.location.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ profile_form.website.id_for_label }}" class="form-label">
+                        <i class="fas fa-link"></i> Website
+                    </label>
+                    {{ profile_form.website }}
+                    {% if profile_form.website.errors %}
+                    <div class="form-error">
+                        {{ profile_form.website.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-xl);">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                    <i class="fas fa-save"></i>
+                    Save Changes
+                </button>
+                <a href="{% url 'accounts:profile' request.user.username %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
 </div>
+
+<style>
+    #id_username, #id_first_name, #id_last_name, #id_email, #id_bio, #id_location, #id_website, #id_avatar {
+        width: 100%;
+        padding: var(--spacing-md);
+        background: var(--bg-primary);
+        border: 2px solid var(--border-light);
+        border-radius: var(--border-radius-sm);
+        color: var(--text-primary);
+        font-size: var(--font-size-base);
+        font-family: var(--font-primary);
+        transition: all var(--transition-fast);
+    }
+    
+    #id_bio {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    #id_username:focus, #id_first_name:focus, #id_last_name:focus, #id_email:focus, #id_bio:focus, #id_location:focus, #id_website:focus, #id_avatar:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+</style>
 {% endblock %}

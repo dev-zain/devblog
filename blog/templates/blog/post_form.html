@@ -1,80 +1,257 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ title }} - DevBlog{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+<style>
+    #quill-editor-container .ql-container {
+        font-size: 1rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 400px;
+    }
+    #quill-editor-container .ql-editor {
+        min-height: 400px;
+        padding: 1rem;
+    }
+    #quill-editor-container .ql-toolbar {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    #quill-editor-container .ql-container {
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow">
-            <div class="card-body">
-                <h2 class="card-title mb-4">{{ title }}</h2>
-                
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
-                        {{ form.title }}
-                        {% if form.title.errors %}
-                        <div class="text-danger small">
-                            {{ form.title.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
-                        {{ form.content }}
-                        {% if form.content.errors %}
-                        <div class="text-danger small">
-                            {{ form.content.errors }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
-                        {% if post.image %}
-                        <div class="mb-2">
-                            <img src="{{ post.image.url }}" class="img-thumbnail" style="max-width: 200px;" alt="Current image">
-                            <p class="text-muted small mt-2">Current image</p>
-                        </div>
-                        {% endif %}
-                        {{ form.image }}
-                        {% if form.image.errors %}
-                        <div class="text-danger small">
-                            {{ form.image.errors }}
-                        </div>
-                        {% endif %}
-                        {% if form.image.help_text %}
-                        <div class="form-text">{{ form.image.help_text }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
-                        {{ form.status }}
-                        {% if form.status.errors %}
-                        <div class="text-danger small">
-                            {{ form.status.errors }}
-                        </div>
-                        {% endif %}
-                        {% if form.status.help_text %}
-                        <div class="form-text">{{ form.status.help_text }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            {% if post %}Update Post{% else %}Create Post{% endif %}
-                        </button>
-                        <a href="{% if post %}{% url 'blog:post_detail' post.slug %}{% else %}{% url 'blog:post_list' %}{% endif %}" class="btn btn-secondary">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
+<div class="container">
+    <div class="post-form-container">
+        <h2 style="margin-bottom: 2rem; font-size: 2rem; font-weight: 700;">{{ title }}</h2>
+        
+        <!-- Display non-field errors -->
+        {% if form.non_field_errors %}
+        <div class="form-error" style="background: #fee; border: 1px solid #fcc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; color: #c33;">
+            <strong>Errors:</strong>
+            <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
         </div>
+        {% endif %}
+        
+        <!-- Debug: Show all form errors if DEBUG -->
+        {% if form.errors %}
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            <strong>Form Validation Errors:</strong>
+            <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                {% for field, errors in form.errors.items %}
+                <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Title -->
+            <div class="post-form-group">
+                <label for="{{ form.title.id_for_label }}" class="post-form-label">
+                    {{ form.title.label }}
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="form-error">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Category -->
+            <div class="post-form-group">
+                <label for="{{ form.category.id_for_label }}" class="post-form-label">
+                    {{ form.category.label }}
+                </label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <div class="form-error">{{ form.category.errors }}</div>
+                {% endif %}
+                {% if form.category.help_text %}
+                <div class="form-help">{{ form.category.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Tags -->
+            <div class="post-form-group">
+                <label for="{{ form.tags_input.id_for_label }}" class="post-form-label">
+                    Tags (max 3)
+                </label>
+                {{ form.tags_input }}
+                {% if form.tags_input.errors %}
+                <div class="form-error">{{ form.tags_input.errors }}</div>
+                {% endif %}
+                {% if form.tags_input.help_text %}
+                <div class="form-help">{{ form.tags_input.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Content (Rich Text Editor) -->
+            <div class="post-form-group">
+                <label for="{{ form.content.id_for_label }}" class="post-form-label">
+                    {{ form.content.label }}
+                </label>
+                <div id="quill-editor-container" style="background: white; border: 1px solid #e9ecef; border-radius: 8px; min-height: 400px;" data-initial-content="{% if post %}{{ post.content|escape }}{% endif %}">
+                    <!-- Quill will be initialized here -->
+                </div>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <div class="form-error">{{ form.content.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Featured Image -->
+            <div class="post-form-group">
+                <label for="{{ form.image.id_for_label }}" class="post-form-label">
+                    {{ form.image.label }}
+                </label>
+                {% if post and post.image %}
+                <div style="margin-bottom: 1rem;">
+                    <img src="{{ post.image.url }}" alt="Current image" style="max-width: 300px; border-radius: 8px; border: 1px solid var(--border-light);">
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;">Current image</p>
+                </div>
+                {% endif %}
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="form-error">{{ form.image.errors }}</div>
+                {% endif %}
+                {% if form.image.help_text %}
+                <div class="form-help">{{ form.image.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Status -->
+            <div class="post-form-group">
+                <label for="{{ form.status.id_for_label }}" class="post-form-label">
+                    {{ form.status.label }}
+                </label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                <div class="form-error">{{ form.status.errors }}</div>
+                {% endif %}
+                {% if form.status.help_text %}
+                <div class="form-help">{{ form.status.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" style="padding: 0.75rem 2rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    {% if post %}Update Post{% else %}Create Post{% endif %}
+                </button>
+                <a href="{% if post %}{% url 'blog:post_detail' post.slug %}{% else %}{% url 'blog:post_list' %}{% endif %}" style="padding: 0.75rem 2rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; transition: all 0.2s;">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="{% static 'js/blog.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Quill to be available
+    if (typeof Quill === 'undefined') {
+        console.error('Quill.js not loaded');
+        return;
+    }
+    
+    const contentTextarea = document.querySelector('#{{ form.content.id_for_label }}');
+    if (!contentTextarea) {
+        console.error('Content textarea not found');
+        return;
+    }
+    
+    // Get the editor container
+    const editorContainer = document.getElementById('quill-editor-container');
+    if (!editorContainer) {
+        console.error('Editor container not found');
+        return;
+    }
+    
+    // Get initial content from textarea value
+    let initialContent = contentTextarea.value || '';
+    
+    // If content is empty, try to get it from data attribute (for editing)
+    if (editorContainer && editorContainer.dataset.initialContent) {
+        const dataContent = editorContainer.dataset.initialContent;
+        if (dataContent && (!initialContent || initialContent.trim() === '')) {
+            initialContent = dataContent;
+            // Also set it in the textarea
+            contentTextarea.value = initialContent;
+        }
+    }
+    
+    // Hide original textarea
+    contentTextarea.style.display = 'none';
+    
+    // Initialize Quill in the container (not targeting the textarea)
+    const quill = new Quill('#quill-editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Write your post content here...'
+    });
+    
+    // Set initial content if editing - wait a bit to ensure Quill is ready
+    setTimeout(function() {
+        if (initialContent && initialContent.trim() !== '' && initialContent.trim() !== '<p><br></p>' && initialContent.trim() !== '<p></p>') {
+            quill.root.innerHTML = initialContent;
+            // Also update the textarea to ensure it's synced
+            contentTextarea.value = initialContent;
+        }
+    }, 100);
+    
+    // Sync Quill content with textarea before form submission
+    const form = contentTextarea.closest('form');
+    if (form) {
+        // Also sync on text change to keep it updated
+        quill.on('text-change', function() {
+            const htmlContent = quill.root.innerHTML;
+            if (htmlContent.trim() !== '<p><br></p>' && htmlContent.trim() !== '<p></p>' && htmlContent.trim() !== '') {
+                contentTextarea.value = htmlContent;
+            }
+        });
+        
+        form.addEventListener('submit', function(e) {
+            // Get HTML content from Quill
+            const htmlContent = quill.root.innerHTML;
+            // Check if content is meaningful (not just empty paragraph)
+            if (htmlContent.trim() === '<p><br></p>' || htmlContent.trim() === '<p></p>' || htmlContent.trim() === '') {
+                // Set to empty string - validation will catch it
+                contentTextarea.value = '';
+            } else {
+                contentTextarea.value = htmlContent;
+            }
+            // Log for debugging
+            console.log('Form submitting with content length:', contentTextarea.value.length);
+            // Don't prevent default - let form submit normally
+        });
+    }
+});
+</script>
 {% endblock %}

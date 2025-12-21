@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Posts by {{ profile_user.username }} - DevBlog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="margin-bottom: var(--spacing-xl);">
+        <a href="{% url 'accounts:profile' profile_user.username %}" class="btn btn-secondary" style="margin-bottom: var(--spacing-md);">
+            <i class="fas fa-arrow-left"></i>
+            Back to Profile
+        </a>
+        <h2>
+            <i class="fas fa-user-circle"></i>
+            All Posts by {{ profile_user.username }}
+        </h2>
+        <p style="color: var(--text-muted);">
+            Showing {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}
+        </p>
+    </div>
+    
+    {% if posts %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        <article class="post-card reveal">
+            {% if post.image %}
+            <a href="{% url 'blog:post_detail' post.slug %}">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image">
+            </a>
+            {% else %}
+            <a href="{% url 'blog:post_detail' post.slug %}">
+                <div class="post-card-image-placeholder">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+            </a>
+            {% endif %}
+            
+            <div class="post-card-content">
+                <div class="post-card-meta">
+                    <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                    {% if post.category %}
+                    <span>
+                        <a href="{% url 'blog:category_detail' post.category.slug %}" class="category-badge" style="padding: 0.125rem 0.5rem; font-size: 0.75rem;">
+                            {{ post.category.name }}
+                        </a>
+                    </span>
+                    {% endif %}
+                    <span class="read-time"><i class="far fa-clock"></i> {{ post.read_time_minutes }} min</span>
+                </div>
+                <h3 class="post-card-title">
+                    <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+                </h3>
+                <p class="post-card-excerpt">{{ post.content|truncatewords:20|striptags }}</p>
+                <div class="post-card-footer">
+                    <a href="{% url 'blog:post_detail' post.slug %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500; font-size: var(--font-size-sm);">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <div class="post-card-stats">
+                        <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                        <span><i class="far fa-comments"></i> {{ post.comments.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="btn btn-outline-primary">
+            <i class="fas fa-angle-double-left"></i> First
+        </a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary">
+            <i class="fas fa-angle-left"></i> Previous
+        </a>
+        {% else %}
+        <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-angle-double-left"></i> First
+        </span>
+        <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-angle-left"></i> Previous
+        </span>
+        {% endif %}
+        
+        <span style="display: flex; align-items: center; padding: 0 var(--spacing-md); color: var(--text-primary);">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary">
+            Next <i class="fas fa-angle-right"></i>
+        </a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary">
+            Last <i class="fas fa-angle-double-right"></i>
+        </a>
+        {% else %}
+        <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">
+            Next <i class="fas fa-angle-right"></i>
+        </span>
+        <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">
+            Last <i class="fas fa-angle-double-right"></i>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="alert alert-info" style="text-align: center; padding: var(--spacing-xl);">
+        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: var(--spacing-md); display: block; color: var(--info-color);"></i>
+        <p style="margin: 0; color: var(--text-secondary);">
+            {{ profile_user.username }} hasn't published any posts yet.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

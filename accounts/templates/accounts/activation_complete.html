@@ -3,22 +3,23 @@
 {% block title %}Account Activated - DevBlog{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body text-center">
-                <h2 class="card-title mb-4">
-                    <i class="bi bi-check-circle" style="font-size: 3rem; color: #28a745;"></i>
-                </h2>
-                <h3 class="mb-3">Account Activated!</h3>
-                <p class="mb-4">
-                    Your email has been verified successfully. 
-                    You can now log in to your account.
-                </p>
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
-                    <i class="bi bi-box-arrow-in-right"></i> Login Now
-                </a>
-            </div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-icon" style="color: var(--success-color);">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Account Activated!</h2>
+        
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: var(--spacing-xl);">
+            Your email has been verified successfully. 
+            You can now log in to your account.
+        </p>
+        
+        <div style="text-align: center;">
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt"></i>
+                Login Now
+            </a>
         </div>
     </div>
 </div>
