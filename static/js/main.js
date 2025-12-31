@@ -57,7 +57,9 @@
         // Close menu when clicking on a nav link
         const navLinks = navbarMenu.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
+                // If this is a dropdown-toggle, do NOT close menu
+                if (link.classList.contains('dropdown-toggle')) return;
                 if (window.innerWidth <= 768) {
                     navbarMenu.classList.remove('active');
                     navbarToggle.classList.remove('active');
