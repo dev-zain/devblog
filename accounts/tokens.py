@@ -1,11 +1,16 @@
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-import six
+
 
 class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
+        # Safely get email_verified, default to False if profile doesn't exist
+        email_verified = getattr(user.profile, 'email_verified', False) if hasattr(user, 'profile') else False
+        
         return (
-            six.text_type(user.pk) + six.text_type(timestamp) +
-            six.text_type(user.profile.email_verified)
+            str(user.pk) +
+            str(timestamp) +
+            str(email_verified)
         )
+
 
 account_activation_token = AccountActivationTokenGenerator()
