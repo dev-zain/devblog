@@ -113,6 +113,9 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # Production static files configuration
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+import os
+os.makedirs(STATIC_ROOT, exist_ok=True)
+
 # WhiteNoise configuration for efficient static file serving
 STORAGES = {
     "default": {
@@ -139,7 +142,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Security settings for production
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
