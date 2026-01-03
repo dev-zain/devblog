@@ -2,9 +2,9 @@
 SendGrid HTTP API email backend
 Uses HTTP instead of SMTP to avoid port blocking on cloud platforms
 """
-from django.core.mail. backends. base import BaseEmailBackend
+from django.core.mail.backends.base import BaseEmailBackend
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Content
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class SendGridBackend(BaseEmailBackend):
         """
         Send one or more EmailMessage objects and return the number sent
         """
-        if not email_messages: 
+        if not email_messages:
             return 0
         
         from django.conf import settings
@@ -35,20 +35,22 @@ class SendGridBackend(BaseEmailBackend):
         sg = SendGridAPIClient(api_key)
         num_sent = 0
         
-        for message in email_messages: 
+        for message in email_messages:
             try:
+                # Determine content type
+                if message.content_subtype == 'html':
+                    content = Content("text/html", message.body)
+                else:
+                    content = Content("text/plain", message.body)
+                
                 # Build SendGrid email
                 mail = Mail(
                     from_email=message.from_email,
                     to_emails=message.to,
                     subject=message.subject,
+                    plain_text_content=content if message.content_subtype != 'html' else None,
+                    html_content=content if message.content_subtype == 'html' else None
                 )
-                
-                # Set content based on content type
-                if message.content_subtype == 'html':
-                    mail.add_html_content(message.body)
-                else:
-                    mail.add_plain_text_content(message. body)
                 
                 # Send via HTTP API
                 response = sg.send(mail)
