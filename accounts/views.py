@@ -14,7 +14,7 @@ from . utils import send_activation_email  # ← NEW
 
 
 def register_view(request):
-    """Handle user registration"""
+    """Handle user registration with email verification"""
     if request.user.is_authenticated:
         return redirect('blog:post_list')
     
@@ -22,26 +22,32 @@ def register_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             try:
-                # Create user
+                # Create user as INACTIVE (requires email verification)
                 user = form.save(commit=False)
-                user.is_active = True
+                user.is_active = False  # ✅ User must verify email first
                 user.save()
                 
-                # Try to send email (but don't crash if it fails)
+                # Try to send activation email
                 try: 
                     send_activation_email(request, user)
-                    messages.success(request, f'Welcome {user.username}! Check your email for the activation link.')
-                except Exception as e:
+                    messages.info(
+                        request, 
+                        f'Account created for {user.username}! '
+                        f'Please check your email ({user.email}) to activate your account.'
+                    )
+                except Exception as e: 
                     import logging
                     logger = logging.getLogger(__name__)
                     logger.error(f"Email failed:  {e}")
-                    messages.success(request, f'Welcome {user.username}! Your account has been created.')
+                    messages.warning(
+                        request, 
+                        'Account created but we couldn\'t send the activation email.  '
+                        'Please contact support.'
+                    )
                 
-                # Login the user
-                login(request, user)
-                
-                # Redirect to homepage
-                return redirect('blog:post_list')
+                # DO NOT login the user - they must verify email first
+                # Redirect to login page with message
+                return redirect('accounts:login')
                 
             except Exception as e: 
                 import logging
@@ -49,7 +55,7 @@ def register_view(request):
                 logger.error(f"Registration error: {e}")
                 import traceback
                 logger.error(traceback.format_exc())
-                messages.error(request, 'An error occurred during registration.  Please try again.')
+                messages.error(request, 'An error occurred during registration. Please try again.')
                 
     else:
         form = SignUpForm()
