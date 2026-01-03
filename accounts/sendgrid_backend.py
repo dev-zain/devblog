@@ -26,7 +26,7 @@ class SendGridBackend(BaseEmailBackend):
         from django.conf import settings
         api_key = settings.SENDGRID_API_KEY
         
-        if not api_key: 
+        if not api_key:
             logger.error("SENDGRID_API_KEY is not configured")
             if not self.fail_silently:
                 raise ValueError("SENDGRID_API_KEY is required for SendGrid backend")
@@ -36,21 +36,32 @@ class SendGridBackend(BaseEmailBackend):
         num_sent = 0
         
         for message in email_messages:
-            try:
-                # Determine content type
-                if message.content_subtype == 'html':
-                    content = Content("text/html", message.body)
-                else:
-                    content = Content("text/plain", message.body)
+            try: 
+                # Build the Mail object properly
+                mail = Mail()
+                mail.from_email = message.from_email
+                mail.subject = message.subject
                 
-                # Build SendGrid email
-                mail = Mail(
-                    from_email=message.from_email,
-                    to_emails=message.to,
-                    subject=message.subject,
-                    plain_text_content=content if message.content_subtype != 'html' else None,
-                    html_content=content if message.content_subtype == 'html' else None
-                )
+                # Handle multiple recipients
+                if isinstance(message.to, list):
+                    for recipient in message.to:
+                        mail.add_to(recipient)
+                else: 
+                    mail.add_to(message.to)
+                
+                # Set content based on content type
+                if hasattr(message, 'content_subtype') and message.content_subtype == 'html':
+                    # HTML email
+                    mail.add_content(Content("text/html", message.body))
+                else:
+                    # Plain text email
+                    mail.add_content(Content("text/plain", message.body))
+                
+                # Add alternatives if present (for multipart emails)
+                if hasattr(message, 'alternatives') and message.alternatives:
+                    for alternative_content, mimetype in message.alternatives:
+                        if mimetype == 'text/html':
+                            mail.add_content(Content("text/html", alternative_content))
                 
                 # Send via HTTP API
                 response = sg.send(mail)
@@ -64,7 +75,7 @@ class SendGridBackend(BaseEmailBackend):
                         raise Exception(f"SendGrid returned status {response.status_code}")
                         
             except Exception as e: 
-                logger.error(f"Failed to send email: {e}")
+                logger.error(f"Failed to send email:  {e}")
                 if not self.fail_silently:
                     raise
         
