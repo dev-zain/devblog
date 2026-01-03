@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django. contrib.messages",
+    "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.sites',
     
@@ -45,13 +45,13 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django.middleware.security. SecurityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",  # Added for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware. common.CommonMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth. middleware.AuthenticationMiddleware",
-    "django.contrib.messages. middleware.MessageMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -64,7 +64,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django. template.context_processors.debug",
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -78,7 +78,7 @@ WSGI_APPLICATION = "devblog.wsgi.application"
 # Database
 DATABASES = {
     "default":  {
-        "ENGINE": "django.db. backends.postgresql",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": config('DB_NAME'),
         "USER": config('DB_USER'),
         "PASSWORD": config('DB_PASSWORD'),
@@ -124,7 +124,7 @@ STORAGES = {
         "BACKEND":  "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise. storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
@@ -143,11 +143,11 @@ EMAIL_BACKEND = config(
 SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 
 # Email metadata
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='muhammadmasab167@gmail. com')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='muhammadmasab167@gmail.com')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Old SMTP settings (keep for local development with Gmail)
-EMAIL_HOST = config('EMAIL_HOST', default='smtp. gmail.com')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
