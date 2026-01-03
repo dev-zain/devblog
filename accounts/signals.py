@@ -7,11 +7,13 @@ from . models import Profile
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     """Create Profile when User is created"""
-    if created:
-        Profile.objects. create(user=instance)
+    if created: 
+        Profile.objects.get_or_create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     """Save Profile when User is saved"""
-    instance.profile.save()
+    # Only save if profile exists (prevents crash on new users)
+    if hasattr(instance, 'profile'):
+        instance.profile.save()

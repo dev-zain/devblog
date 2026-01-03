@@ -21,36 +21,40 @@ def register_view(request):
     if request.method == 'POST':   
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = True  # Keep active for now
-            user.save()
-            
-            # Try to send email with detailed error logging
             try:
+                # Create user
+                user = form.save(commit=False)
+                user.is_active = True
+                user.save()
+                
+                # Try to send email (but don't crash if it fails)
+                try: 
+                    send_activation_email(request, user)
+                    messages.success(request, f'Welcome {user.username}! Check your email for the activation link.')
+                except Exception as e:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.error(f"Email failed:  {e}")
+                    messages.success(request, f'Welcome {user.username}! Your account has been created.')
+                
+                # Login the user
+                login(request, user)
+                
+                # Redirect to homepage
+                return redirect('blog:post_list')
+                
+            except Exception as e: 
                 import logging
                 logger = logging.getLogger(__name__)
-                logger.info(f"Attempting to send email to {user.email}")
-                
-                send_activation_email(request, user)
-                
-                logger.info(f"Email sent successfully to {user.email}")
-                messages.info(request, 'Account created!  Check your email for activation link.')
-            except Exception as e:
-                # Log the full error
+                logger.error(f"Registration error: {e}")
                 import traceback
-                logger.error(f"Email sending failed:  {str(e)}")
                 logger.error(traceback.format_exc())
+                messages.error(request, 'An error occurred during registration.  Please try again.')
                 
-                # Show user-friendly message
-                messages.warning(request, f'Account created but email failed:  {str(e)}')
-            
-            # Login user regardless of email success
-            login(request, user)
-            return redirect('blog: post_list')
     else:
         form = SignUpForm()
     
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form':  form})
 
 
 def activate(request, uidb64, token):  # ← COMPLETELY NEW FUNCTION
