@@ -14,25 +14,25 @@ from . utils import send_activation_email  # ← NEW
 
 
 def register_view(request):
-    """Handle user registration with email verification"""
+    """Handle user registration"""
     if request.user.is_authenticated:
         return redirect('blog:post_list')
     
-    if request.method == 'POST': 
+    if request.method == 'POST':  
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # Create user but set as inactive  ← CHANGED
-            user = form.save(commit=False)  # ← CHANGED
-            user.is_active = False  # ← NEW:  User can't login until email verified
-            user.save()  # ← CHANGED
+            # Create user as ACTIVE (skip email verification for now)
+            user = form. save(commit=False)
+            user.is_active = True  # ← Changed from False
+            user.save()
             
-            # Send activation email  ← NEW
-            send_activation_email(request, user)  # ← NEW
+            # Skip email for now - will add later when SendGrid is ready
+            # send_activation_email(request, user)
             
-            # Show confirmation page  ← NEW
-            return render(request, 'accounts/activation_sent.html', {  # ← CHANGED
-                'email': user.email  # ← NEW
-            })  # ← CHANGED
+            # Auto-login the user
+            login(request, user)
+            messages.success(request, f'Welcome {user.username}! Your account has been created.')
+            return redirect('blog:post_list')
     else:
         form = SignUpForm()
     
