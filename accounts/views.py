@@ -18,21 +18,35 @@ def register_view(request):
     if request.user.is_authenticated:
         return redirect('blog:post_list')
     
-    if request.method == 'POST':  
+    if request.method == 'POST':   
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # Create user as ACTIVE (skip email verification for now)
-            user = form. save(commit=False)
-            user.is_active = True  # ← Changed from False
+            user = form.save(commit=False)
+            user.is_active = True  # Keep active for now
             user.save()
             
-            # Skip email for now - will add later when SendGrid is ready
-            # send_activation_email(request, user)
+            # Try to send email with detailed error logging
+            try:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.info(f"Attempting to send email to {user.email}")
+                
+                send_activation_email(request, user)
+                
+                logger.info(f"Email sent successfully to {user.email}")
+                messages.info(request, 'Account created!  Check your email for activation link.')
+            except Exception as e:
+                # Log the full error
+                import traceback
+                logger.error(f"Email sending failed:  {str(e)}")
+                logger.error(traceback.format_exc())
+                
+                # Show user-friendly message
+                messages.warning(request, f'Account created but email failed:  {str(e)}')
             
-            # Auto-login the user
+            # Login user regardless of email success
             login(request, user)
-            messages.success(request, f'Welcome {user.username}! Your account has been created.')
-            return redirect('blog:post_list')
+            return redirect('blog: post_list')
     else:
         form = SignUpForm()
     
