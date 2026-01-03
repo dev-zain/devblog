@@ -59,7 +59,11 @@ The DevBlog Team
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[user.email],
         )
-        email.content_subtype = 'html'  # Set content type to HTML
+        email.content_subtype = 'html'
+
+        # Add timeout to email connection
+        import socket
+        socket.setdefaulttimeout(30)  # 30 second timeout for email
         email.send(fail_silently=False)
         
         logger.info(f"Activation email sent successfully to {user.email}")
