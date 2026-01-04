@@ -33,7 +33,7 @@ def register_view(request):
                     messages.info(
                         request, 
                         f'Account created for {user.username}! '
-                        f'Please check your email ({user.email}) to activate your account.'
+                        f'Please check your email inbox or spam folder ({user.email}) to activate your account.'
                     )
                 except Exception as e: 
                     import logging
