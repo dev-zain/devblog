@@ -1,5 +1,5 @@
 """
-Django settings for devblog project. 
+Django settings for devblog project.  
 """
 
 from pathlib import Path
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Added for static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -62,8 +62,8 @@ ROOT_URLCONF = "devblog.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "DIRS":  [BASE_DIR / "templates"],
+        "APP_DIRS":  True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -75,18 +75,7 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = "devblog.wsgi.application"
-
-# WhiteNoise configuration for efficient static file serving
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core. files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND":  "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 # Database
 DATABASES = {
@@ -103,7 +92,7 @@ DATABASES = {
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":  "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
         "NAME":  "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -123,19 +112,11 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# Production static files configuration
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 os.makedirs(STATIC_ROOT, exist_ok=True)
-
-
-# Media files
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 # Email Configuration - Using SendGrid HTTP API
 EMAIL_BACKEND = config(
@@ -143,7 +124,7 @@ EMAIL_BACKEND = config(
     default='accounts.sendgrid_backend.SendGridBackend'
 )
 
-# SendGrid API Key (for HTTP API - avoids SMTP port blocking on Railway)
+# SendGrid API Key
 SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 
 # Email metadata
@@ -162,7 +143,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security settings for production
-if not DEBUG:
+if not DEBUG: 
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -170,34 +151,31 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 
-
-# AWS S3 Configuration for Media Storage
+# AWS S3 Configuration
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='devblog-zain')
 AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-north-1')
-
-# S3 Settings
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_DEFAULT_ACL = 'public-read'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 
-# Storage Configuration
-if not DEBUG: 
-    # Production: S3 for media, WhiteNoise for static
+# Storage Configuration - SIMPLIFIED
+if not DEBUG:
+    # Production: S3 for media only
     DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
     
-    # Static files served by WhiteNoise (fast and free)
-    STATIC_URL = "/static/"
-    STATIC_ROOT = BASE_DIR / "staticfiles"
+    # WhiteNoise handles static files
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 else:
-    # Development: local storage for both
+    # Development: local storage
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
-    STATIC_URL = "/static/"
     os.makedirs(MEDIA_ROOT, exist_ok=True)
