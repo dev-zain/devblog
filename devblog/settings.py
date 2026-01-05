@@ -180,18 +180,23 @@ AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazo
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl':  'max-age=86400',  # Cache for 1 day
 }
-AWS_DEFAULT_ACL = 'public-read'
-AWS_QUERYSTRING_AUTH = False  # Don't add authentication to URLs
+AWS_DEFAULT_ACL = 'public-read'  # CRITICAL: Make uploads public
+AWS_QUERYSTRING_AUTH = False  # Don't add auth signatures to URLs
 AWS_S3_FILE_OVERWRITE = False  # Don't overwrite files with same name
+AWS_LOCATION = 'media'  # Upload to media/ folder
 
 # Storage Configuration
 if not DEBUG:
-    # Production:  Use S3 for media files
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+    # Production:  Use S3 with custom storage backend
+    DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
+    STATICFILES_STORAGE = 'devblog. storage_backends.StaticStorage'
+    
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
 else:
     # Development: Use local storage
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
+    STATIC_URL = "/static/"
     import os
     os.makedirs(MEDIA_ROOT, exist_ok=True)
