@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}About DevBlog - What is DevBlog?{% endblock %}
+{% block title %}About DevBlog - Full-Stack Blogging Platform{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 <style>
     .about-hero {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: white !important;
+        color: white ! important;
         padding: 4rem 0;
         text-align: center;
         margin-bottom: 3rem;
@@ -22,22 +22,33 @@
         font-size: 3rem;
         font-weight: 800;
         margin-bottom: 1rem;
-        color: white !important;
+        color: white ! important;
     }
     
     .about-hero p {
         font-size: 1.25rem;
         opacity: 0.95;
-        max-width: 700px;
-        margin: 0 auto;
+        max-width: 800px;
+        margin: 0 auto 1.5rem;
         color: white !important;
+    }
+    
+    .tech-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin:  0.25rem;
+        font-size:  0.9rem;
+        font-weight: 600;
     }
     
     .feature-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 2rem;
-        margin: 3rem 0;
+        margin:  3rem 0;
     }
     
     .feature-card {
@@ -50,7 +61,7 @@
     }
     
     .feature-card:hover {
-        transform: translateY(-5px);
+        transform:  translateY(-5px);
         box-shadow: var(--shadow-lg);
         border-color: var(--primary-color);
     }
@@ -75,7 +86,7 @@
     .stats-section {
         background: var(--bg-secondary);
         padding: 3rem 0;
-        margin: 3rem 0;
+        margin:  3rem 0;
         border-radius: var(--border-radius-lg);
     }
     
@@ -98,10 +109,126 @@
     }
     
     .stat-box-label {
-        font-size: 1rem;
+        font-size:  1rem;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 1px;
+    }
+    
+    .tech-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--border-radius-lg);
+        padding: 2.5rem;
+        margin: 3rem 0;
+    }
+    
+    .tech-category {
+        margin-bottom: 2rem;
+    }
+    
+    .tech-category h4 {
+        color:  var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+    
+    .tech-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .tech-item {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 0.5rem 1.25rem;
+        border-radius:  20px;
+        font-size:  0.95rem;
+        font-weight:  600;
+        border:  1px solid var(--border-light);
+    }
+    
+    .highlight-section {
+        margin: 4rem 0;
+        background: var(--bg-secondary);
+        padding: 3rem;
+        border-radius: var(--border-radius-lg);
+    }
+    
+    .highlight-item {
+        margin-bottom: 2rem;
+    }
+    
+    .highlight-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .highlight-item h3 {
+        color:  var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .highlight-item p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+    
+    .cta-section {
+        text-align: center;
+        margin: 4rem 0;
+        padding: 3rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border-radius: var(--border-radius-lg);
+    }
+    
+    .cta-section h2,
+    .cta-section p {
+        color: white ! important;
+    }
+    
+    .cta-section h2 {
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .project-links {
+        margin:  4rem 0;
+        text-align: center;
+        padding: 2rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--border-radius-lg);
+    }
+    
+    .project-links h3 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .project-links p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .project-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 </style>
 {% endblock %}
@@ -111,12 +238,21 @@
     <div class="container">
         <h1>
             <i class="fas fa-code"></i>
-            What is DevBlog?
+            DevBlog - Full-Stack Blogging Platform
         </h1>
         <p>
-            DevBlog is a modern, feature-rich blogging platform designed specifically for developers. 
-            Share your knowledge, learn from the community, and build your developer presence.
+            A production-ready, full-stack blogging platform built with Django and PostgreSQL. 
+            Features user authentication, email verification, AWS S3 integration, rich text editing, 
+            social engagement, and advanced content management—deployed on Railway with CI/CD.
         </p>
+        <div>
+            <span class="tech-badge">Django 5.2</span>
+            <span class="tech-badge">PostgreSQL</span>
+            <span class="tech-badge">AWS S3</span>
+            <span class="tech-badge">SendGrid</span>
+            <span class="tech-badge">Railway</span>
+            <span class="tech-badge">Bootstrap 5</span>
+        </div>
     </div>
 </div>
 
@@ -125,7 +261,7 @@
     <div class="stats-section">
         <div class="container">
             <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
-                Our Community in Numbers
+                Platform Statistics
             </h2>
             <div class="stats-grid">
                 <div class="stat-box">
@@ -148,32 +284,137 @@
         </div>
     </div>
 
+    <!-- Tech Stack Section -->
+    <section class="tech-section">
+        <h2 style="text-align:  center; margin-bottom: 2.5rem; color: var(--text-primary); font-size: 2.5rem;">
+            <i class="fas fa-layer-group"></i> Technology Stack
+        </h2>
+        
+        <div class="tech-category">
+            <h4><i class="fas fa-server"></i> Backend</h4>
+            <div class="tech-list">
+                <span class="tech-item">Django 5.2.9</span>
+                <span class="tech-item">Python 3.x</span>
+                <span class="tech-item">PostgreSQL</span>
+                <span class="tech-item">Django ORM</span>
+                <span class="tech-item">Gunicorn</span>
+            </div>
+        </div>
+
+        <div class="tech-category">
+            <h4><i class="fas fa-paint-brush"></i> Frontend</h4>
+            <div class="tech-list">
+                <span class="tech-item">HTML5 & CSS3</span>
+                <span class="tech-item">JavaScript (ES6+)</span>
+                <span class="tech-item">Bootstrap 5</span>
+                <span class="tech-item">Font Awesome Icons</span>
+                <span class="tech-item">AJAX (Fetch API)</span>
+            </div>
+        </div>
+
+        <div class="tech-category">
+            <h4><i class="fas fa-cloud"></i> Cloud & Infrastructure</h4>
+            <div class="tech-list">
+                <span class="tech-item">AWS S3 (Media Storage)</span>
+                <span class="tech-item">Railway (Hosting)</span>
+                <span class="tech-item">PostgreSQL (Cloud DB)</span>
+                <span class="tech-item">WhiteNoise (Static Files)</span>
+            </div>
+        </div>
+
+        <div class="tech-category">
+            <h4><i class="fas fa-envelope"></i> Third-Party Integrations</h4>
+            <div class="tech-list">
+                <span class="tech-item">SendGrid (Email)</span>
+                <span class="tech-item">Boto3 (AWS SDK)</span>
+                <span class="tech-item">django-storages</span>
+                <span class="tech-item">Pillow (Image Processing)</span>
+            </div>
+        </div>
+
+        <div class="tech-category">
+            <h4><i class="fas fa-shield-alt"></i> Security & Best Practices</h4>
+            <div class="tech-list">
+                <span class="tech-item">CSRF Protection</span>
+                <span class="tech-item">SSL/HTTPS</span>
+                <span class="tech-item">Secure Cookies</span>
+                <span class="tech-item">Email Verification</span>
+                <span class="tech-item">Password Reset Tokens</span>
+                <span class="tech-item">XSS Protection</span>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
-    <section style="margin: 4rem 0;">
+    <section style="margin:  4rem 0;">
         <h2 style="text-align: center; margin-bottom: 3rem; color: var(--text-primary); font-size: 2.5rem;">
-            Platform Features
+            <i class="fas fa-star"></i> Core Features
         </h2>
         
         <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>User Authentication</h3>
+                <p>
+                    Complete authentication system with registration, login, logout, 
+                    email verification, and password reset.  Secure token-based activation.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h3>Email Verification</h3>
+                <p>
+                    SendGrid-powered email system with account activation and password reset emails.  
+                    Production-ready email infrastructure.
+                </p>
+            </div>
+            
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-edit"></i>
                 </div>
                 <h3>Rich Text Editor</h3>
                 <p>
-                    Create beautiful blog posts with our powerful rich text editor. 
-                    Format text, add images, create lists, and more with an intuitive interface.
+                    Create beautiful blog posts with a powerful rich text editor. 
+                    Format text, add images, and create lists with an intuitive interface.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-save"></i>
+                </div>
+                <h3>Draft & Publish System</h3>
+                <p>
+                    Save posts as drafts and publish when ready. Full CRUD operations 
+                    with edit history tracking and automatic slug generation.
                 </p>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-folder"></i>
+                    <i class="fas fa-folder-open"></i>
                 </div>
                 <h3>Categories & Tags</h3>
                 <p>
-                    Organize your content with categories and tags. 
-                    Help readers discover your posts and find related content easily.
+                    Organize content with categories and up to 3 tags per post. 
+                    Auto-creation of tags and SEO-friendly slugs.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3>AWS S3 Integration</h3>
+                <p>
+                    Scalable media storage with AWS S3. Upload featured images and avatars 
+                    with automatic cloud-based delivery.
                 </p>
             </div>
             
@@ -181,10 +422,20 @@
                 <div class="feature-icon">
                     <i class="fas fa-heart"></i>
                 </div>
-                <h3>Like & Comment</h3>
+                <h3>Like System</h3>
                 <p>
-                    Engage with the community through likes and threaded comments. 
-                    Build discussions and connect with other developers.
+                    AJAX-powered like/unlike functionality with real-time updates and visual feedback.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Threaded Comments</h3>
+                <p>
+                    Full commenting system with nested replies, edit functionality, 
+                    and AJAX submission.
                 </p>
             </div>
             
@@ -194,8 +445,18 @@
                 </div>
                 <h3>User Profiles</h3>
                 <p>
-                    Create your developer profile with bio, location, website, and avatar. 
-                    Showcase all your published posts in one place.
+                    Customizable profiles with avatar, bio, location, and website.  
+                    Public profile pages showcasing user posts.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Featured Posts</h3>
+                <p>
+                    Admin-controlled featured posts system with automatic fallback to most-liked posts.
                 </p>
             </div>
             
@@ -205,59 +466,122 @@
                 </div>
                 <h3>Advanced Search</h3>
                 <p>
-                    Search through posts by title, content, category, or tags. 
-                    Find exactly what you're looking for quickly and easily.
+                    Multi-field search across post titles, content, categories, and tags with pagination support.
                 </p>
             </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-fire"></i>
                 </div>
-                <h3>Featured Posts</h3>
+                <h3>Content Discovery</h3>
                 <p>
-                    Discover handpicked featured posts on the homepage. 
-                    Get your best content highlighted to reach more readers.
+                    Latest posts, recently uploaded (7 days), and most liked posts sections with smart filtering logic.
                 </p>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-image"></i>
-                </div>
-                <h3>Image Support</h3>
-                <p>
-                    Upload featured images for your posts. 
-                    Make your content visually appealing and stand out in post listings.
-                </p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-save"></i>
-                </div>
-                <h3>Draft System</h3>
-                <p>
-                    Save your work as drafts and publish when ready. 
-                    Edit your posts anytime, even after publishing.
-                </p>
-            </div>
-            
+
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
                 <h3>Responsive Design</h3>
                 <p>
-                    Access DevBlog from any device. 
-                    Our responsive design ensures a great experience on desktop, tablet, and mobile.
+                    Mobile-first responsive design with Bootstrap 5. Optimized for all devices.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>Reading Time</h3>
+                <p>
+                    Automatic reading time calculation (220 words/minute) for better user experience.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Admin Dashboard</h3>
+                <p>
+                    Customized Django admin with list filters, search fields, and inline editing.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <h3>Pagination</h3>
+                <p>
+                    Django Paginator integration across all list views with optimized queries.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Highlights -->
+    <section class="highlight-section">
+        <h2 style="text-align: center; margin-bottom: 2.5rem; color: var(--text-primary); font-size: 2.5rem;">
+            <i class="fas fa-cogs"></i> Technical Highlights
+        </h2>
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div class="highlight-item">
+                <h3>
+                    <i class="fas fa-database"></i> Database Design
+                </h3>
+                <p>
+                    Optimized PostgreSQL schema with 7 models: User, Profile, Post, Comment, Like, Category, and Tag.  
+                    Utilizes ForeignKey, ManyToMany, and OneToOne relationships with proper indexing.
+                </p>
+            </div>
+            
+            <div class="highlight-item">
+                <h3>
+                    <i class="fas fa-bolt"></i> Performance Optimization
+                </h3>
+                <p>
+                    Query optimization with select_related() and prefetch_related(). 
+                    Django ORM aggregation for statistics and database indexing on slug fields.
+                </p>
+            </div>
+            
+            <div class="highlight-item">
+                <h3>
+                    <i class="fas fa-lock"></i> Security Implementation
+                </h3>
+                <p>
+                    CSRF token validation, secure password hashing, HTTPS enforcement, 
+                    secure session cookies, XSS protection headers, and email verification.
+                </p>
+            </div>
+
+            <div class="highlight-item">
+                <h3>
+                    <i class="fas fa-rocket"></i> Deployment & DevOps
+                </h3>
+                <p>
+                    Deployed on Railway with environment-based configuration. 
+                    Static files via WhiteNoise, media on AWS S3, and Gunicorn WSGI server.
+                </p>
+            </div>
+
+            <div class="highlight-item">
+                <h3>
+                    <i class="fas fa-code-branch"></i> Code Quality
+                </h3>
+                <p>
+                    Clean architecture following Django best practices with DRY principles, 
+                    custom form validation, and comprehensive admin customization.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- How It Works Section -->
-    <section style="margin: 4rem 0; background: var(--bg-secondary); padding: 3rem; border-radius: var(--border-radius-lg);">
+    <section style="margin: 4rem 0;">
         <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
             How It Works
         </h2>
@@ -267,8 +591,8 @@
                     <i class="fas fa-user-plus"></i> 1. Create Your Account
                 </h3>
                 <p style="color: var(--text-secondary);">
-                    Sign up for free and create your developer profile. 
-                    Add your bio, location, website, and profile picture to personalize your presence.
+                    Sign up for free with email verification. Activate your account via email link, 
+                    then create your developer profile.
                 </p>
             </div>
             
@@ -277,8 +601,8 @@
                     <i class="fas fa-pen"></i> 2. Write Your First Post
                 </h3>
                 <p style="color: var(--text-secondary);">
-                    Use our rich text editor to create engaging blog posts. 
-                    Add images, format text, organize with categories and tags, and save as draft or publish immediately.
+                    Use the rich text editor to create posts. Add featured images, organize with categories 
+                    and tags, save as draft, or publish immediately.
                 </p>
             </div>
             
@@ -286,9 +610,8 @@
                 <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">
                     <i class="fas fa-share"></i> 3. Share & Engage
                 </h3>
-                <p style="color: var(--text-secondary);">
-                    Share your knowledge with the community. 
-                    Get likes, receive comments, and engage in discussions with fellow developers.
+                <p style="color:  var(--text-secondary);">
+                    Share your knowledge with the community. Receive likes and engage in threaded discussions. 
                 </p>
             </div>
             
@@ -297,39 +620,53 @@
                     <i class="fas fa-chart-line"></i> 4. Build Your Presence
                 </h3>
                 <p style="color: var(--text-secondary);">
-                    Grow your developer brand. 
-                    Showcase your expertise, connect with others, and become part of a thriving developer community.
+                    Grow your developer brand with public profile pages and community engagement.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section style="text-align: center; margin: 4rem 0; padding: 3rem; background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border-radius: var(--border-radius-lg); color: white !important;">
-        <h2 style="color: white !important; margin-bottom: 1rem;">
-            Ready to Get Started?
-        </h2>
-        <p style="font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.95; color: white !important;">
-            Join thousands of developers sharing knowledge and building together.
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <section class="cta-section">
+        <h2>Ready to Get Started?</h2>
+        <p>Join the community and start sharing your developer knowledge today.</p>
+        <div class="cta-buttons">
             {% if user.is_authenticated %}
-            <a href="{% url 'blog:post_create' %}" class="btn btn-primary" style="background: white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
+            <a href="{% url 'blog: post_create' %}" class="btn btn-primary" style="background:  white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
                 <i class="fas fa-pen"></i>
                 Write Your First Post
             </a>
             {% else %}
-            <a href="{% url 'accounts:register' %}" class="btn btn-primary" style="background: white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary" style="background:  white; color: var(--primary-color); padding: 1rem 2rem; font-size: 1.1rem;">
                 <i class="fas fa-user-plus"></i>
                 Create Free Account
             </a>
-            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 1rem 2rem; font-size: 1.1rem;">
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="background:  rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; padding: 1rem 2rem; font-size: 1.1rem;">
                 <i class="fas fa-sign-in-alt"></i>
                 Login
             </a>
             {% endif %}
         </div>
     </section>
+
+    <!-- Project Links Section -->
+    <section class="project-links">
+        <h3>
+            <i class="fab fa-github"></i> Open Source Project
+        </h3>
+        <p>
+            This project is built as a portfolio demonstration of full-stack development skills. 
+        </p>
+        <div class="project-buttons">
+            <a href="https://github.com/dev-zain/devblog" target="_blank" class="btn btn-outline-primary" style="padding: 0.75rem 1.5rem;">
+                <i class="fab fa-github"></i>
+                View Source Code
+            </a>
+            <a href="https://github.com/dev-zain" target="_blank" class="btn btn-outline-secondary" style="padding: 0.75rem 1.5rem;">
+                <i class="fas fa-user"></i>
+                Developer Profile
+            </a>
+        </div>
+    </section>
 </div>
 {% endblock %}
-
