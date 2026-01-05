@@ -158,16 +158,14 @@ AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='devblog-zai
 AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-north-1')
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 
-# CRITICAL: These settings control ACLs
-AWS_DEFAULT_ACL = 'None'
+# S3 Settings - Bucket policy handles public access
+AWS_DEFAULT_ACL = None  # ✅ NO QUOTES!  Python None
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
-AWS_S3_SIGNATURE_VERSION = "s3v4"
-
 
 # Storage Configuration
-if not DEBUG:
+if not DEBUG: 
     DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 else:
