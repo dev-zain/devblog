@@ -162,20 +162,13 @@ AWS_DEFAULT_ACL = 'public-read'
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 
-# Storage Configuration - SIMPLIFIED
+# Media Storage Configuration
 if not DEBUG:
-    # Production: S3 for media only
+    # Production:  Use S3 for media files only
     DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-    
-    # WhiteNoise handles static files
-    STORAGES = {
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
-    }
 else:
-    # Development: local storage
+    # Development: Use local storage
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
     os.makedirs(MEDIA_ROOT, exist_ok=True)
