@@ -75,7 +75,18 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "devblog.wsgi.application"
+
+# WhiteNoise configuration for efficient static file serving
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core. files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND":  "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Database
 DATABASES = {
@@ -120,15 +131,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 os.makedirs(STATIC_ROOT, exist_ok=True)
 
-# WhiteNoise configuration for efficient static file serving
-STORAGES = {
-    "default": {
-        "BACKEND":  "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 # Media files
 MEDIA_URL = "/media/"
@@ -178,25 +180,24 @@ AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='eu-north-1')
 # S3 Settings
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl':  'max-age=86400',  # Cache for 1 day
+    'CacheControl': 'max-age=86400',
 }
-AWS_DEFAULT_ACL = 'public-read'  # CRITICAL: Make uploads public
-AWS_QUERYSTRING_AUTH = False  # Don't add auth signatures to URLs
-AWS_S3_FILE_OVERWRITE = False  # Don't overwrite files with same name
-AWS_LOCATION = 'media'  # Upload to media/ folder
+AWS_DEFAULT_ACL = 'public-read'
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
 
 # Storage Configuration
-if not DEBUG:
-    # Production:  Use S3 with custom storage backend
+if not DEBUG: 
+    # Production: S3 for media, WhiteNoise for static
     DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
-    STATICFILES_STORAGE = 'devblog. storage_backends.StaticStorage'
-    
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+    
+    # Static files served by WhiteNoise (fast and free)
+    STATIC_URL = "/static/"
+    STATIC_ROOT = BASE_DIR / "staticfiles"
 else:
-    # Development: Use local storage
+    # Development: local storage for both
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
     STATIC_URL = "/static/"
-    import os
     os.makedirs(MEDIA_ROOT, exist_ok=True)
