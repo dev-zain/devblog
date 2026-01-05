@@ -166,11 +166,7 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 
-# Storage Configuration
-if not DEBUG:
-    DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-else:
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-    os.makedirs(MEDIA_ROOT, exist_ok=True)
+# Media files - ALWAYS use S3 in production (Railway)
+DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
+
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
