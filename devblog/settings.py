@@ -165,29 +165,12 @@ AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
-from botocore.client import Config
 
-AWS_S3_REGION_NAME = "eu-north-1"
-AWS_S3_SIGNATURE_VERSION = "s3v4"
-
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-}
-
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_QUERYSTRING_AUTH = False
-
-AWS_S3_ADDRESSING_STYLE = "virtual"
-
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
-
-AWS_S3_CLIENT_CONFIG = Config(
-    region_name=AWS_S3_REGION_NAME,
-    signature_version=AWS_S3_SIGNATURE_VERSION,
-)
-
-
-
-DEFAULT_FILE_STORAGE = "devblog.storage_backends.MediaStorage"
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+# Storage Configuration
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+else:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
