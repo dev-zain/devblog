@@ -19,9 +19,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # ⬇️ ADD THESE LINES
 import sys
 print(f"=" * 80, file=sys.stderr)
-print(f"🔍 DEBUG MODE: {DEBUG}", file=sys. stderr)
+print(f"🔍 DEBUG MODE: {DEBUG}", file=sys.stderr)
 print(f"🔍 DEBUG TYPE: {type(DEBUG)}", file=sys.stderr)
-print(f"=" * 80, file=sys. stderr)
+print(f"=" * 80, file=sys.stderr)
 
 # Updated ALLOWED_HOSTS for Railway
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
@@ -159,7 +159,7 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 
-# AWS S3 Configuration for Media Storage
+# AWS S3 Configuration
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='devblog-zain')
@@ -174,18 +174,35 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-# Add at the very end of settings.py
+# Storage Configuration
+if not DEBUG:
+    # Production: Use S3 for media files
+    DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+else:
+    # Development: Local storage
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+
+# Debug logging for storage configuration
+import sys
 print(f"\n{'='*80}", file=sys.stderr)
+print(f"🔍 DEBUG MODE: {DEBUG}", file=sys.stderr)
 print(f"📦 STORAGE CONFIGURATION:", file=sys.stderr)
 if not DEBUG:
     print(f"✅ Using S3 Storage", file=sys.stderr)
     print(f"   DEFAULT_FILE_STORAGE:  {DEFAULT_FILE_STORAGE}", file=sys.stderr)
     print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-    print(f"   AWS_STORAGE_BUCKET_NAME: {AWS_STORAGE_BUCKET_NAME}", file=sys. stderr)
-    print(f"   AWS_ACCESS_KEY_ID: {AWS_ACCESS_KEY_ID[: 10] if AWS_ACCESS_KEY_ID else 'NOT SET'}...", file=sys.stderr)
-    print(f"   AWS_SECRET_ACCESS_KEY: {'SET (length:  ' + str(len(AWS_SECRET_ACCESS_KEY)) + ')' if AWS_SECRET_ACCESS_KEY else 'NOT SET'}", file=sys.stderr)
+    print(f"   Bucket:  {AWS_STORAGE_BUCKET_NAME}", file=sys.stderr)
+    print(f"   Region: {AWS_S3_REGION_NAME}", file=sys.stderr)
+    key_display = AWS_ACCESS_KEY_ID[: 10] + '...' if AWS_ACCESS_KEY_ID else 'NOT SET'
+    print(f"   Access Key: {key_display}", file=sys.stderr)
+    secret_display = f'SET (length: {len(AWS_SECRET_ACCESS_KEY)})' if AWS_SECRET_ACCESS_KEY else 'NOT SET'
+    print(f"   Secret Key: {secret_display}", file=sys.stderr)
 else:
-    print(f"⚠️  Using LOCAL Storage (DEBUG=True)", file=sys.stderr)
+    print(f"⚠️  Using LOCAL Storage", file=sys.stderr)
     print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-    print(f"   MEDIA_ROOT: {MEDIA_ROOT}", file=sys.stderr)
+    if 'MEDIA_ROOT' in locals():
+        print(f"   MEDIA_ROOT: {MEDIA_ROOT}", file=sys.stderr)
 print(f"{'='*80}\n", file=sys.stderr)
