@@ -1,11 +1,18 @@
 """
-Custom S3 storage backend for media files with detailed logging
+Custom S3 storage backend for media files
 """
 from storages.backends.s3boto3 import S3Boto3Storage
-from django.conf import settings
 import logging
+import sys
 
+# Force logging to stderr
 logger = logging.getLogger(__name__)
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+print("🔥 storage_backends.py MODULE LOADED!", file=sys.stderr)
 
 
 class MediaStorage(S3Boto3Storage):
@@ -16,26 +23,25 @@ class MediaStorage(S3Boto3Storage):
     querystring_auth = False
     
     def __init__(self, *args, **kwargs):
+        print("🔥 MediaStorage.__init__() called!", file=sys.stderr)
         super().__init__(*args, **kwargs)
-        logger.info(f"📦 S3 Storage initialized")
-        logger.info(f"🪣 Bucket: {settings.AWS_STORAGE_BUCKET_NAME}")
-        logger.info(f"🌍 Region: {settings.AWS_S3_REGION_NAME}")
-        logger.info(f"🔑 Access Key: {settings.AWS_ACCESS_KEY_ID[: 10]}...")
-        logger.info(f"🔐 Secret Key: {'SET' if settings.AWS_SECRET_ACCESS_KEY else 'NOT SET'}")
+        print(f"✅ MediaStorage initialized for bucket: {self.bucket_name}", file=sys.stderr)
     
     def _save(self, name, content):
-        logger.info(f"🚀 Attempting S3 upload: {name}")
-        logger.info(f"📂 Full S3 path: {self.location}/{name}")
+        print(f"🔥 MediaStorage._save() called!  File: {name}", file=sys.stderr)
+        print(f"📂 Full path will be: {self.location}/{name}", file=sys.stderr)
+        
         try:
             result = super()._save(name, content)
-            logger.info(f"✅ SUCCESS!  File uploaded to S3: {result}")
-            full_url = self.url(result)
-            logger.info(f"🌐 File URL: {full_url}")
+            print(f"✅ Upload SUCCESS! Result: {result}", file=sys.stderr)
+            url = self.url(result)
+            print(f"🌐 File URL: {url}", file=sys.stderr)
             return result
         except Exception as e:
-            logger.error(f"❌ S3 UPLOAD FAILED!")
-            logger.error(f"❌ Error type: {type(e).__name__}")
-            logger.error(f"❌ Error message: {str(e)}")
+            print(f"❌ Upload FAILED! Error: {e}", file=sys.stderr)
             import traceback
-            logger.error(f"❌ Full traceback:\n{traceback.format_exc()}")
+            traceback.print_exc(file=sys.stderr)
             raise
+
+
+print("🔥 storage_backends.py: MediaStorage class defined!", file=sys.stderr)

@@ -150,6 +150,28 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Logging Configuration
+LOGGING = {
+    'version':  1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class':  'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'devblog. storage_backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 # Security settings for production
 if not DEBUG: 
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -176,8 +198,15 @@ AWS_S3_OBJECT_PARAMETERS = {
 
 # Storage Configuration
 if not DEBUG:
-    # Production: Use S3 for media files
-    DEFAULT_FILE_STORAGE = 'devblog.storage_backends.MediaStorage'
+    # Production:  Use S3 for media files (Django 4.2+ style)
+    STORAGES = {
+        "default": {  # This is for media files
+            "BACKEND": "devblog.storage_backends.MediaStorage",
+        },
+        "staticfiles": {  # This is for static files
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 else:
     # Development: Local storage
@@ -192,9 +221,9 @@ print(f"🔍 DEBUG MODE: {DEBUG}", file=sys.stderr)
 print(f"📦 STORAGE CONFIGURATION:", file=sys.stderr)
 if not DEBUG:
     print(f"✅ Using S3 Storage", file=sys.stderr)
-    print(f"   DEFAULT_FILE_STORAGE:  {DEFAULT_FILE_STORAGE}", file=sys.stderr)
+    print(f"   STORAGES['default']: {STORAGES['default']['BACKEND']}", file=sys.stderr)
     print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-    print(f"   Bucket:  {AWS_STORAGE_BUCKET_NAME}", file=sys.stderr)
+    print(f"   Bucket: {AWS_STORAGE_BUCKET_NAME}", file=sys.stderr)
     print(f"   Region: {AWS_S3_REGION_NAME}", file=sys.stderr)
     key_display = AWS_ACCESS_KEY_ID[: 10] + '...' if AWS_ACCESS_KEY_ID else 'NOT SET'
     print(f"   Access Key: {key_display}", file=sys.stderr)
@@ -203,6 +232,4 @@ if not DEBUG:
 else:
     print(f"⚠️  Using LOCAL Storage", file=sys.stderr)
     print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-    if 'MEDIA_ROOT' in locals():
-        print(f"   MEDIA_ROOT: {MEDIA_ROOT}", file=sys.stderr)
 print(f"{'='*80}\n", file=sys.stderr)
