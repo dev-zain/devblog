@@ -6,29 +6,21 @@ from pathlib import Path
 from decouple import config
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project like this: BASE_DIR / 'subdir'. 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING:  keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production! 
+# SECURITY WARNING: don't run with debug turned on in production!  
 DEBUG = config('DEBUG', default=False, cast=bool)
-
-
-# ⬇️ ADD THESE LINES
-import sys
-print(f"=" * 80, file=sys.stderr)
-print(f"🔍 DEBUG MODE: {DEBUG}", file=sys.stderr)
-print(f"🔍 DEBUG TYPE: {type(DEBUG)}", file=sys.stderr)
-print(f"=" * 80, file=sys.stderr)
 
 # Updated ALLOWED_HOSTS for Railway
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 # Add Railway's domain if provided
 RAILWAY_STATIC_URL = config('RAILWAY_STATIC_URL', default='')
-if RAILWAY_STATIC_URL: 
+if RAILWAY_STATIC_URL:  
     ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
 
 # CSRF Settings for Railway
@@ -70,8 +62,8 @@ ROOT_URLCONF = "devblog.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS":  [BASE_DIR / "templates"],
-        "APP_DIRS":  True,
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -87,11 +79,11 @@ WSGI_APPLICATION = "devblog.wsgi.application"
 
 # Database
 DATABASES = {
-    "default":  {
-        "ENGINE": "django.db.backends.postgresql",
+    "default": {
+        "ENGINE":  "django.db.backends.postgresql",
         "NAME": config('DB_NAME'),
         "USER": config('DB_USER'),
-        "PASSWORD": config('DB_PASSWORD'),
+        "PASSWORD":  config('DB_PASSWORD'),
         "HOST": config('DB_HOST'),
         "PORT": config('DB_PORT', default='5432'),
     }
@@ -100,16 +92,16 @@ DATABASES = {
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME":  "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME":  "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME":  "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -152,11 +144,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Logging Configuration
 LOGGING = {
-    'version':  1,
+    'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'class':  'logging.StreamHandler',
+            'class': 'logging.StreamHandler',
         },
     },
     'root': {
@@ -164,7 +156,7 @@ LOGGING = {
         'level': 'INFO',
     },
     'loggers': {
-        'devblog. storage_backends': {
+        'devblog.storage_backends': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
@@ -173,7 +165,7 @@ LOGGING = {
 }
 
 # Security settings for production
-if not DEBUG: 
+if not DEBUG:  
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -197,8 +189,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 # Storage Configuration
-if not DEBUG:
-    # Production:  Use S3 for media files (Django 4.2+ style)
+if not DEBUG: 
+    # Production: Use S3 for media files (Django 4.2+ style)
     STORAGES = {
         "default": {  # This is for media files
             "BACKEND": "devblog.storage_backends.MediaStorage",
@@ -213,23 +205,3 @@ else:
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
     os.makedirs(MEDIA_ROOT, exist_ok=True)
-
-# Debug logging for storage configuration
-import sys
-print(f"\n{'='*80}", file=sys.stderr)
-print(f"🔍 DEBUG MODE: {DEBUG}", file=sys.stderr)
-print(f"📦 STORAGE CONFIGURATION:", file=sys.stderr)
-if not DEBUG:
-    print(f"✅ Using S3 Storage", file=sys.stderr)
-    print(f"   STORAGES['default']: {STORAGES['default']['BACKEND']}", file=sys.stderr)
-    print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-    print(f"   Bucket: {AWS_STORAGE_BUCKET_NAME}", file=sys.stderr)
-    print(f"   Region: {AWS_S3_REGION_NAME}", file=sys.stderr)
-    key_display = AWS_ACCESS_KEY_ID[: 10] + '...' if AWS_ACCESS_KEY_ID else 'NOT SET'
-    print(f"   Access Key: {key_display}", file=sys.stderr)
-    secret_display = f'SET (length: {len(AWS_SECRET_ACCESS_KEY)})' if AWS_SECRET_ACCESS_KEY else 'NOT SET'
-    print(f"   Secret Key: {secret_display}", file=sys.stderr)
-else:
-    print(f"⚠️  Using LOCAL Storage", file=sys.stderr)
-    print(f"   MEDIA_URL: {MEDIA_URL}", file=sys.stderr)
-print(f"{'='*80}\n", file=sys.stderr)
