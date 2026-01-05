@@ -163,6 +163,8 @@ AWS_DEFAULT_ACL = 'None'
 AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+
 
 # Storage Configuration
 if not DEBUG:
