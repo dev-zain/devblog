@@ -149,7 +149,6 @@ Latest thing I learned: **Django's STORAGES configuration** (introduced in 4.2).
 
 ### First Customer Mentality
 I test everything by using the platform myself:
-- Created 10+ posts to test pagination
 - Verified email flows with real email accounts
 - Tested on mobile devices
 - Broke things intentionally to test error handling
