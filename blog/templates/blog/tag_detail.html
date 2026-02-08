@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load blog_extras %}
 
 {% block title %}{{ tag.name }} - DevBlog{% endblock %}
 
@@ -13,7 +14,8 @@
         <h1 class="tag-title">
             <i class="fas fa-tag"></i> {{ tag.name }}
         </h1>
-        <a href="{% url 'blog:post_list' %}" style="color: var(--blog-primary); text-decoration: none; margin-top: 1rem; display: inline-block;">
+        <a href="{% url 'blog:post_list' %}"
+            style="color: var(--blog-primary); text-decoration: none; margin-top: 1rem; display: inline-block;">
             <i class="fas fa-arrow-left"></i> Back to Posts
         </a>
     </div>
@@ -33,7 +35,7 @@
                 </div>
             </a>
             {% endif %}
-            
+
             <div class="post-card-content">
                 <div class="post-card-meta">
                     <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
@@ -43,9 +45,10 @@
                 <h3 class="post-card-title">
                     <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
                 </h3>
-                <p class="post-card-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                <p class="post-card-excerpt">{{ post.content|clean_excerpt:25 }}</p>
                 <div class="post-card-footer">
-                    <a href="{% url 'blog:post_detail' post.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                    <a href="{% url 'blog:post_detail' post.slug %}"
+                        style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
                         Read More <i class="fas fa-arrow-right"></i>
                     </a>
                     <div class="post-card-stats">
@@ -64,18 +67,18 @@
         {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i> Previous</a>
         {% endif %}
-        
+
         {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <span class="current">{{ num }}</span>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <a href="?page={{ num }}">{{ num }}</a>
+        {% if page_obj.number == num %}
+        <span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}">{{ num
+            }}</a>
             {% endif %}
-        {% endfor %}
-        
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next <i class="fas fa-chevron-right"></i></a>
-        {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next <i class="fas fa-chevron-right"></i></a>
+            {% endif %}
     </div>
     {% endif %}
     {% else %}
@@ -93,4 +96,3 @@
 {% block extra_js %}
 <script src="{% static 'js/blog.js' %}"></script>
 {% endblock %}
-

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load blog_extras %}
 
 {% block title %}{{ post.title }} - DevBlog{% endblock %}
 
@@ -31,9 +32,9 @@
             </span>
             {% endif %}
         </div>
-        
+
         <h1 class="post-detail-title">{{ post.title }}</h1>
-        
+
         <div class="post-detail-categories-tags">
             {% if post.category %}
             <a href="{% url 'blog:category_detail' post.category.slug %}" class="category-badge">
@@ -46,14 +47,16 @@
             </a>
             {% endfor %}
         </div>
-        
+
         <!-- Author Actions -->
         {% if user == post.author %}
         <div style="margin-top: 1rem;">
-            <a href="{% url 'blog:post_edit' post.slug %}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--blog-bg-light); border: 1px solid var(--blog-border); border-radius: 8px; color: var(--blog-text); text-decoration: none; margin-right: 0.5rem;">
+            <a href="{% url 'blog:post_edit' post.slug %}"
+                style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--blog-bg-light); border: 1px solid var(--blog-border); border-radius: 8px; color: var(--blog-text); text-decoration: none; margin-right: 0.5rem;">
                 <i class="fas fa-edit"></i> Edit
             </a>
-            <a href="{% url 'blog:post_delete' post.slug %}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; border: 1px solid #ef4444; border-radius: 8px; color: white; text-decoration: none;">
+            <a href="{% url 'blog:post_delete' post.slug %}"
+                style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; border: 1px solid #ef4444; border-radius: 8px; color: white; text-decoration: none;">
                 <i class="fas fa-trash"></i> Delete
             </a>
         </div>
@@ -87,13 +90,14 @@
             <span class="like-count">({{ post.likes.count }})</span>
         </a>
         {% endif %}
-        
+
         <button class="like-button" onclick="sharePost()" style="cursor: pointer;">
             <i class="fas fa-share-alt"></i>
             <span>Share</span>
         </button>
-        
-        <a href="{% url 'blog:post_list' %}" class="btn-back" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer;">
+
+        <a href="{% url 'blog:post_list' %}" class="btn-back"
+            style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer;">
             <i class="fas fa-arrow-left"></i>
             <span>Back to Posts</span>
         </a>
@@ -117,19 +121,21 @@
                     </div>
                 </a>
                 {% endif %}
-                
+
                 <div class="post-card-content">
                     <div class="post-card-meta">
                         <span><i class="fas fa-user-circle"></i> {{ related_post.author.username }}</span>
                         <span><i class="far fa-calendar"></i> {{ related_post.created_at|date:"M d, Y" }}</span>
-                        <span class="read-time"><i class="far fa-clock"></i> {{ related_post.read_time_minutes }} min</span>
+                        <span class="read-time"><i class="far fa-clock"></i> {{ related_post.read_time_minutes }}
+                            min</span>
                     </div>
                     <h3 class="post-card-title">
                         <a href="{% url 'blog:post_detail' related_post.slug %}">{{ related_post.title }}</a>
                     </h3>
-                    <p class="post-card-excerpt">{{ related_post.content|truncatewords:25|striptags }}</p>
+                    <p class="post-card-excerpt">{{ related_post.content|clean_excerpt:25 }}</p>
                     <div class="post-card-footer">
-                        <a href="{% url 'blog:post_detail' related_post.slug %}" style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
+                        <a href="{% url 'blog:post_detail' related_post.slug %}"
+                            style="color: var(--blog-primary); text-decoration: none; font-weight: 500;">
                             Read More <i class="fas fa-arrow-right"></i>
                         </a>
                         <div class="post-card-stats">
@@ -145,207 +151,246 @@
     {% endif %}
 
     <!-- Comments Section -->
-    <section id="comments" style="background: var(--bg-primary); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-light); margin-top: 2rem;">
+    <section id="comments"
+        style="background: var(--bg-primary); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-light); margin-top: 2rem;">
         <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600;">
             <i class="far fa-comments"></i> Comments ({{ comments.count }})
         </h3>
-        
+
         <!-- Comment Form -->
         {% if user.is_authenticated %}
-        <div style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-light);">
+        <div
+            style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-light);">
             <h4 style="margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600;">Add a Comment</h4>
             <form id="comment-form" method="post" action="{% url 'blog:comment_create' post.slug %}">
                 {% csrf_token %}
-                <textarea name="content" id="comment-content" rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem;" placeholder="Write your comment..." required></textarea>
+                <textarea name="content" id="comment-content" rows="4"
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem;"
+                    placeholder="Write your comment..." required></textarea>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <button type="submit" id="comment-submit-btn" style="padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s;">
+                    <button type="submit" id="comment-submit-btn"
+                        style="padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s;">
                         <i class="fas fa-paper-plane"></i> Post Comment
                     </button>
-                    <button type="button" onclick="this.form.reset()" style="padding: 0.75rem 1rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 8px; font-weight: 500; cursor: pointer;">
+                    <button type="button" onclick="this.form.reset()"
+                        style="padding: 0.75rem 1rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-light); border-radius: 8px; font-weight: 500; cursor: pointer;">
                         Clear
                     </button>
                 </div>
             </form>
         </div>
         {% else %}
-        <div style="margin-bottom: 2rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
-            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Please <a href="{% url 'accounts:login' %}" style="color: var(--primary-color);">login</a> to comment.</p>
+        <div
+            style="margin-bottom: 2rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px; text-align: center;">
+            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Please <a href="{% url 'accounts:login' %}"
+                    style="color: var(--primary-color);">login</a> to comment.</p>
         </div>
         {% endif %}
-        
+
         <!-- Comments List -->
         {% if comments %}
-            {% for comment in comments %}
-            <div id="comment-{{ comment.id }}" style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                    <strong style="color: var(--text-primary);">{{ comment.author.username }}</strong>
-                    <small style="color: var(--text-muted);">{{ comment.created_at|date:"F d, Y" }}</small>
-                </div>
-                <div id="comment-content-{{ comment.id }}" style="margin: 0 0 0.75rem 0; color: var(--text-primary); line-height: 1.6;">{{ comment.content|linebreaks }}</div>
-                
-                <!-- Edit Form (hidden by default) -->
-                {% if user == comment.author %}
-                <div id="edit-form-{{ comment.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid var(--border-light);">
-                    <form class="edit-comment-form" method="post" action="{% url 'blog:comment_edit' post.slug comment.id %}">
-                        {% csrf_token %}
-                        <textarea name="content" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 0.75rem;" required>{{ comment.content }}</textarea>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button type="submit" style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem;">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                            <button type="button" onclick="hideEditForm({{ comment.id }})" style="padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                {% endif %}
-                
-                <!-- Reply Button -->
-                {% if user.is_authenticated %}
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <button onclick="showReplyForm({{ comment.id }})" style="padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
-                        <i class="fas fa-reply"></i> Reply
-                    </button>
-                    {% if user == comment.author %}
-                    <button onclick="showEditForm({{ comment.id }})" style="padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    {% endif %}
-                </div>
-                
-                <!-- Reply Form (hidden by default) -->
-                <div id="reply-form-{{ comment.id }}" style="display: none; margin-top: 1rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid var(--border-light);">
-                    <form class="reply-form" method="post" action="{% url 'blog:comment_create' post.slug %}" data-comment-id="{{ comment.id }}">
-                        {% csrf_token %}
-                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                        <textarea name="content" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 0.75rem;" placeholder="Write your reply..." required></textarea>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button type="submit" style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem;">
-                                <i class="fas fa-paper-plane"></i> Post Reply
-                            </button>
-                            <button type="button" onclick="hideReplyForm({{ comment.id }})" style="padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                {% endif %}
-                
-                <!-- Replies -->
-                {% if comment.replies.all %}
-                <div class="replies-container" style="margin-top: 1rem; margin-left: 2rem; padding-left: 1rem; border-left: 2px solid var(--border-light);">
-                    {% for reply in comment.replies.all %}
-                    <div id="reply-{{ reply.id }}" style="padding: 0.75rem; background: white; border-radius: 6px; margin-bottom: 0.75rem; border: 1px solid var(--border-light);">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.25rem;">
-                            <strong style="color: var(--text-primary); font-size: 0.9rem;">{{ reply.author.username }}</strong>
-                            <small style="color: var(--text-muted); font-size: 0.8rem;">{{ reply.created_at|date:"M d, Y" }}</small>
-                        </div>
-                        <div id="reply-content-{{ reply.id }}" style="margin: 0 0 0.5rem 0; color: var(--text-primary); line-height: 1.5; font-size: 0.9rem;">{{ reply.content|linebreaks }}</div>
-                        
-                        <!-- Edit Button for Reply -->
-                        {% if user == reply.author %}
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                            <button onclick="showEditReplyForm({{ reply.id }})" style="padding: 0.4rem 0.8rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.8rem;">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                        </div>
-                        
-                        <!-- Edit Form for Reply (hidden by default) -->
-                        <div id="edit-reply-form-{{ reply.id }}" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-light);">
-                            <form class="edit-reply-form" method="post" action="{% url 'blog:comment_edit' post.slug reply.id %}">
-                                {% csrf_token %}
-                                <textarea name="content" rows="2" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 0.9rem; margin-bottom: 0.5rem;" required>{{ reply.content }}</textarea>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <button type="submit" style="padding: 0.4rem 0.8rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">
-                                        <i class="fas fa-save"></i> Save
-                                    </button>
-                                    <button type="button" onclick="hideEditReplyForm({{ reply.id }})" style="padding: 0.4rem 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.8rem;">
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        {% endif %}
+        {% for comment in comments %}
+        <div id="comment-{{ comment.id }}"
+            style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                <strong style="color: var(--text-primary);">{{ comment.author.username }}</strong>
+                <small style="color: var(--text-muted);">{{ comment.created_at|date:"F d, Y" }}</small>
+            </div>
+            <div id="comment-content-{{ comment.id }}"
+                style="margin: 0 0 0.75rem 0; color: var(--text-primary); line-height: 1.6;">{{
+                comment.content|linebreaks }}</div>
+
+            <!-- Edit Form (hidden by default) -->
+            {% if user == comment.author %}
+            <div id="edit-form-{{ comment.id }}"
+                style="display: none; margin-top: 1rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid var(--border-light);">
+                <form class="edit-comment-form" method="post"
+                    action="{% url 'blog:comment_edit' post.slug comment.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" rows="3"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 0.75rem;"
+                        required>{{ comment.content }}</textarea>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit"
+                            style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" onclick="hideEditForm({{ comment.id }})"
+                            style="padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                            Cancel
+                        </button>
                     </div>
-                    {% endfor %}
-                </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Reply Button -->
+            {% if user.is_authenticated %}
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button onclick="showReplyForm({{ comment.id }})"
+                    style="padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                    <i class="fas fa-reply"></i> Reply
+                </button>
+                {% if user == comment.author %}
+                <button onclick="showEditForm({{ comment.id }})"
+                    style="padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
                 {% endif %}
             </div>
-            {% endfor %}
+
+            <!-- Reply Form (hidden by default) -->
+            <div id="reply-form-{{ comment.id }}"
+                style="display: none; margin-top: 1rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid var(--border-light);">
+                <form class="reply-form" method="post" action="{% url 'blog:comment_create' post.slug %}"
+                    data-comment-id="{{ comment.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <textarea name="content" rows="3"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 0.75rem;"
+                        placeholder="Write your reply..." required></textarea>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit"
+                            style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.875rem;">
+                            <i class="fas fa-paper-plane"></i> Post Reply
+                        </button>
+                        <button type="button" onclick="hideReplyForm({{ comment.id }})"
+                            style="padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Replies -->
+            {% if comment.replies.all %}
+            <div class="replies-container"
+                style="margin-top: 1rem; margin-left: 2rem; padding-left: 1rem; border-left: 2px solid var(--border-light);">
+                {% for reply in comment.replies.all %}
+                <div id="reply-{{ reply.id }}"
+                    style="padding: 0.75rem; background: white; border-radius: 6px; margin-bottom: 0.75rem; border: 1px solid var(--border-light);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.25rem;">
+                        <strong style="color: var(--text-primary); font-size: 0.9rem;">{{ reply.author.username
+                            }}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem;">{{ reply.created_at|date:"M d, Y"
+                            }}</small>
+                    </div>
+                    <div id="reply-content-{{ reply.id }}"
+                        style="margin: 0 0 0.5rem 0; color: var(--text-primary); line-height: 1.5; font-size: 0.9rem;">
+                        {{ reply.content|linebreaks }}</div>
+
+                    <!-- Edit Button for Reply -->
+                    {% if user == reply.author %}
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button onclick="showEditReplyForm({{ reply.id }})"
+                            style="padding: 0.4rem 0.8rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.8rem;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+
+                    <!-- Edit Form for Reply (hidden by default) -->
+                    <div id="edit-reply-form-{{ reply.id }}"
+                        style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-light);">
+                        <form class="edit-reply-form" method="post"
+                            action="{% url 'blog:comment_edit' post.slug reply.id %}">
+                            {% csrf_token %}
+                            <textarea name="content" rows="2"
+                                style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-light); border-radius: 6px; font-family: inherit; font-size: 0.9rem; margin-bottom: 0.5rem;"
+                                required>{{ reply.content }}</textarea>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit"
+                                    style="padding: 0.4rem 0.8rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button type="button" onclick="hideEditReplyForm({{ reply.id }})"
+                                    style="padding: 0.4rem 0.8rem; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.8rem;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
         {% else %}
-            <p style="color: var(--blog-text-muted); text-align: center; padding: 2rem;">
-                No comments yet. Be the first to comment!
-            </p>
+        <p style="color: var(--blog-text-muted); text-align: center; padding: 2rem;">
+            No comments yet. Be the first to comment!
+        </p>
         {% endif %}
     </section>
 </div>
 
 <script>
-function sharePost() {
-    if (navigator.share) {
-        navigator.share({
-            title: '{{ post.title }}',
-            text: '{{ post.content|truncatewords:30|striptags }}',
-            url: window.location.href
-        });
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
-    }
-}
-
-function showReplyForm(commentId) {
-    document.getElementById('reply-form-' + commentId).style.display = 'block';
-}
-
-function hideReplyForm(commentId) {
-    document.getElementById('reply-form-' + commentId).style.display = 'none';
-    document.querySelector('#reply-form-' + commentId + ' textarea').value = '';
-}
-
-function showEditForm(commentId) {
-    document.getElementById('edit-form-' + commentId).style.display = 'block';
-}
-
-function hideEditForm(commentId) {
-    document.getElementById('edit-form-' + commentId).style.display = 'none';
-}
-
-function showEditReplyForm(replyId) {
-    document.getElementById('edit-reply-form-' + replyId).style.display = 'block';
-}
-
-function hideEditReplyForm(replyId) {
-    document.getElementById('edit-reply-form-' + replyId).style.display = 'none';
-}
-
-// Get CSRF token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+    function sharePost() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ post.title }}',
+                text: '{{ post.content|truncatewords:30|striptags }}',
+                url: window.location.href
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
         }
     }
-    return cookieValue;
-}
 
-// Build comment HTML
-function buildCommentHTML(data, userId, username, commentCreateUrl, commentEditUrl) {
-    const isOwner = data.author === username;
-    const editButton = isOwner ? `
+    function showReplyForm(commentId) {
+        document.getElementById('reply-form-' + commentId).style.display = 'block';
+    }
+
+    function hideReplyForm(commentId) {
+        document.getElementById('reply-form-' + commentId).style.display = 'none';
+        document.querySelector('#reply-form-' + commentId + ' textarea').value = '';
+    }
+
+    function showEditForm(commentId) {
+        document.getElementById('edit-form-' + commentId).style.display = 'block';
+    }
+
+    function hideEditForm(commentId) {
+        document.getElementById('edit-form-' + commentId).style.display = 'none';
+    }
+
+    function showEditReplyForm(replyId) {
+        document.getElementById('edit-reply-form-' + replyId).style.display = 'block';
+    }
+
+    function hideEditReplyForm(replyId) {
+        document.getElementById('edit-reply-form-' + replyId).style.display = 'none';
+    }
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Build comment HTML
+    function buildCommentHTML(data, userId, username, commentCreateUrl, commentEditUrl) {
+        const isOwner = data.author === username;
+        const editButton = isOwner ? `
         <button onclick="showEditForm(${data.comment_id})" style="padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
             <i class="fas fa-edit"></i> Edit
         </button>
     ` : '';
-    const editForm = isOwner ? `
+        const editForm = isOwner ? `
         <div id="edit-form-${data.comment_id}" style="display: none; margin-top: 1rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid var(--border-light);">
             <form class="edit-comment-form" method="post" action="${commentEditUrl.replace('0', data.comment_id)}">
                 <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
@@ -361,8 +406,8 @@ function buildCommentHTML(data, userId, username, commentCreateUrl, commentEditU
             </form>
         </div>
     ` : '';
-    
-    return `
+
+        return `
         <div id="comment-${data.comment_id}" style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-light);">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
                 <strong style="color: var(--text-primary);">${escapeHtml(data.author)}</strong>
@@ -393,19 +438,19 @@ function buildCommentHTML(data, userId, username, commentCreateUrl, commentEditU
             ${editForm}
         </div>
     `;
-}
+    }
 
-// Build reply HTML
-function buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl) {
-    const isOwner = data.author === currentUsername;
-    const editButton = isOwner ? `
+    // Build reply HTML
+    function buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl) {
+        const isOwner = data.author === currentUsername;
+        const editButton = isOwner ? `
         <div style="display: flex; gap: 0.5rem; align-items: center;">
             <button onclick="showEditReplyForm(${data.comment_id})" style="padding: 0.4rem 0.8rem; background: transparent; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 0.8rem;">
                 <i class="fas fa-edit"></i> Edit
             </button>
         </div>
     ` : '';
-    const editForm = isOwner ? `
+        const editForm = isOwner ? `
         <div id="edit-reply-form-${data.comment_id}" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-light);">
             <form class="edit-reply-form" method="post" action="${commentEditUrl.replace('0', data.comment_id)}">
                 <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
@@ -421,8 +466,8 @@ function buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl) {
             </form>
         </div>
     ` : '';
-    
-    return `
+
+        return `
         <div id="reply-${data.comment_id}" style="padding: 0.75rem; background: white; border-radius: 6px; margin-bottom: 0.75rem; border: 1px solid var(--border-light);">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.25rem;">
                 <strong style="color: var(--text-primary); font-size: 0.9rem;">${escapeHtml(data.author)}</strong>
@@ -433,122 +478,122 @@ function buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl) {
             ${editForm}
         </div>
     `;
-}
+    }
 
-// Escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
-// AJAX Comment Submission
-document.addEventListener('DOMContentLoaded', function() {
-    const commentForm = document.getElementById('comment-form');
-    if (commentForm) {
-        commentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const submitBtn = document.getElementById('comment-submit-btn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                credentials: 'same-origin'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Clear form
-                    this.reset();
-                    
-                    // Build comment HTML
-                    const currentUserId = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
-                    const currentUsername = '{% if user.is_authenticated %}{{ user.username|escapejs }}{% endif %}';
-                    const commentCreateUrl = '{% url "blog:comment_create" post.slug %}';
-                    const commentEditUrl = '{% url "blog:comment_edit" post.slug 0 %}';
-                    const commentHTML = buildCommentHTML(data, currentUserId, currentUsername, commentCreateUrl, commentEditUrl);
-                    
-                    if (data.is_reply) {
-                        // Add reply to parent comment
-                        const replyHTML = buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl);
-                        const parentComment = document.getElementById('comment-' + data.parent_id);
-                        if (parentComment) {
-                            let repliesDiv = parentComment.querySelector('.replies-container');
-                            if (!repliesDiv) {
-                                repliesDiv = document.createElement('div');
-                                repliesDiv.className = 'replies-container';
-                                repliesDiv.style.cssText = 'margin-top: 1rem; margin-left: 2rem; padding-left: 1rem; border-left: 2px solid var(--border-light);';
-                                parentComment.appendChild(repliesDiv);
+    // AJAX Comment Submission
+    document.addEventListener('DOMContentLoaded', function () {
+        const commentForm = document.getElementById('comment-form');
+        if (commentForm) {
+            commentForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const submitBtn = document.getElementById('comment-submit-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Clear form
+                            this.reset();
+
+                            // Build comment HTML
+                            const currentUserId = {% if user.is_authenticated %} { { user.id } } {% else %} null{% endif %};
+                        const currentUsername = '{% if user.is_authenticated %}{{ user.username|escapejs }}{% endif %}';
+                        const commentCreateUrl = '{% url "blog:comment_create" post.slug %}';
+                        const commentEditUrl = '{% url "blog:comment_edit" post.slug 0 %}';
+                        const commentHTML = buildCommentHTML(data, currentUserId, currentUsername, commentCreateUrl, commentEditUrl);
+
+                        if (data.is_reply) {
+                            // Add reply to parent comment
+                            const replyHTML = buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl);
+                            const parentComment = document.getElementById('comment-' + data.parent_id);
+                            if (parentComment) {
+                                let repliesDiv = parentComment.querySelector('.replies-container');
+                                if (!repliesDiv) {
+                                    repliesDiv = document.createElement('div');
+                                    repliesDiv.className = 'replies-container';
+                                    repliesDiv.style.cssText = 'margin-top: 1rem; margin-left: 2rem; padding-left: 1rem; border-left: 2px solid var(--border-light);';
+                                    parentComment.appendChild(repliesDiv);
+                                }
+                                repliesDiv.insertAdjacentHTML('beforeend', replyHTML);
                             }
-                            repliesDiv.insertAdjacentHTML('beforeend', replyHTML);
+                        } else {
+                            // Add top-level comment
+                            const commentsSection = document.querySelector('#comments');
+                            let commentsList = commentsSection.querySelector('.comments-list');
+                            if (!commentsList) {
+                                // Create comments list if it doesn't exist
+                                const noCommentsMsg = commentsSection.querySelector('p');
+                                if (noCommentsMsg) noCommentsMsg.remove();
+                                commentsList = document.createElement('div');
+                                commentsList.className = 'comments-list';
+                                commentsSection.appendChild(commentsList);
+                            }
+                            commentsList.insertAdjacentHTML('afterbegin', commentHTML);
                         }
+
+                        // Re-attach event listeners for the new reply form
+                        const newReplyForm = document.querySelector('#reply-form-' + data.comment_id + ' .reply-form');
+                        if (newReplyForm && !newReplyForm.dataset.listenerAttached) {
+                            newReplyForm.dataset.listenerAttached = 'true';
+                        }
+
+                        // Update comment count
+                        const countEl = document.querySelector('#comments h3');
+                        if (countEl) {
+                            const currentCount = parseInt(countEl.textContent.match(/\d+/)[0]) || 0;
+                            countEl.innerHTML = '<i class="far fa-comments"></i> Comments (' + (currentCount + 1) + ')';
+                        }
+
+                        // Scroll to new comment
+                        setTimeout(() => {
+                            const newComment = document.getElementById('comment-' + data.comment_id);
+                            if (newComment) {
+                                newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                newComment.style.background = 'var(--bg-hover)';
+                                setTimeout(() => {
+                                    newComment.style.background = 'var(--bg-secondary)';
+                                }, 2000);
+                            }
+                        }, 100);
                     } else {
-                        // Add top-level comment
-                        const commentsSection = document.querySelector('#comments');
-                        let commentsList = commentsSection.querySelector('.comments-list');
-                        if (!commentsList) {
-                            // Create comments list if it doesn't exist
-                            const noCommentsMsg = commentsSection.querySelector('p');
-                            if (noCommentsMsg) noCommentsMsg.remove();
-                            commentsList = document.createElement('div');
-                            commentsList.className = 'comments-list';
-                            commentsSection.appendChild(commentsList);
-                        }
-                        commentsList.insertAdjacentHTML('afterbegin', commentHTML);
-                    }
-                    
-                    // Re-attach event listeners for the new reply form
-                    const newReplyForm = document.querySelector('#reply-form-' + data.comment_id + ' .reply-form');
-                    if (newReplyForm && !newReplyForm.dataset.listenerAttached) {
-                        newReplyForm.dataset.listenerAttached = 'true';
-                    }
-                    
-                    // Update comment count
-                    const countEl = document.querySelector('#comments h3');
-                    if (countEl) {
-                        const currentCount = parseInt(countEl.textContent.match(/\d+/)[0]) || 0;
-                        countEl.innerHTML = '<i class="far fa-comments"></i> Comments (' + (currentCount + 1) + ')';
-                    }
-                    
-                    // Scroll to new comment
-                    setTimeout(() => {
-                        const newComment = document.getElementById('comment-' + data.comment_id);
-                        if (newComment) {
-                            newComment.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                            newComment.style.background = 'var(--bg-hover)';
-                            setTimeout(() => {
-                                newComment.style.background = 'var(--bg-secondary)';
-                            }, 2000);
-                        }
-                    }, 100);
-                } else {
-                    alert('Error: ' + (data.error || 'Failed to post comment'));
-                }
+                        alert('Error: ' + (data.error || 'Failed to post comment'));
+            }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to post comment. Please try again.');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to post comment. Please try again.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
         });
     }
-    
+
     // AJAX Reply Submission (using event delegation)
-    document.addEventListener('submit', function(e) {
+    document.addEventListener('submit', function (e) {
         if (e.target.classList.contains('reply-form')) {
             e.preventDefault();
-            
+
             const form = e.target;
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -556,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const commentId = form.dataset.commentId;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
-            
+
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -565,18 +610,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 credentials: 'same-origin'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hide form
-                    hideReplyForm(commentId);
-                    
-                    // Build reply HTML
-                    const currentUserId = {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %};
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hide form
+                        hideReplyForm(commentId);
+
+                        // Build reply HTML
+                        const currentUserId = {% if user.is_authenticated %} { { user.id } } {% else %} null{% endif %};
                     const currentUsername = '{% if user.is_authenticated %}{{ user.username|escapejs }}{% endif %}';
                     const commentEditUrl = '{% url "blog:comment_edit" post.slug 0 %}';
                     const replyHTML = buildReplyHTML(data, currentUserId, currentUsername, commentEditUrl);
-                    
+
                     // Add reply to parent comment
                     const parentComment = document.getElementById('comment-' + data.parent_id);
                     if (parentComment) {
@@ -589,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         repliesDiv.insertAdjacentHTML('beforeend', replyHTML);
                     }
-                    
+
                     // Update comment count
                     const countEl = document.querySelector('#comments h3');
                     if (countEl) {
@@ -598,24 +643,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } else {
                     alert('Error: ' + (data.error || 'Failed to post reply'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to post reply. Please try again.');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+        }
+    })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to post reply. Please try again.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
         }
     });
-    
+
     // AJAX Comment Edit (using event delegation)
-    document.addEventListener('submit', function(e) {
+    document.addEventListener('submit', function (e) {
         if (e.target.classList.contains('edit-comment-form')) {
             e.preventDefault();
-            
+
             const form = e.target;
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -623,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const commentId = form.action.match(/comment\/(\d+)\/edit/)[1];
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            
+
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -632,37 +677,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 credentials: 'same-origin'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hide edit form
-                    hideEditForm(commentId);
-                    
-                    // Update comment content
-                    const contentDiv = document.getElementById('comment-content-' + commentId);
-                    if (contentDiv) {
-                        // Convert line breaks to HTML
-                        const formattedContent = escapeHtml(data.content).replace(/\n/g, '<br>');
-                        contentDiv.innerHTML = formattedContent;
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hide edit form
+                        hideEditForm(commentId);
+
+                        // Update comment content
+                        const contentDiv = document.getElementById('comment-content-' + commentId);
+                        if (contentDiv) {
+                            // Convert line breaks to HTML
+                            const formattedContent = escapeHtml(data.content).replace(/\n/g, '<br>');
+                            contentDiv.innerHTML = formattedContent;
+                        }
+                    } else {
+                        alert('Error: ' + (data.error || 'Failed to update comment'));
                     }
-                } else {
-                    alert('Error: ' + (data.error || 'Failed to update comment'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to update comment. Please try again.');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update comment. Please try again.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
         }
-        
+
         // AJAX Reply Edit (using event delegation)
         if (e.target.classList.contains('edit-reply-form')) {
             e.preventDefault();
-            
+
             const form = e.target;
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -670,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const replyId = form.action.match(/comment\/(\d+)\/edit/)[1];
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            
+
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -679,31 +724,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 credentials: 'same-origin'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Hide edit form
-                    hideEditReplyForm(replyId);
-                    
-                    // Update reply content
-                    const contentDiv = document.getElementById('reply-content-' + replyId);
-                    if (contentDiv) {
-                        // Convert line breaks to HTML
-                        const formattedContent = escapeHtml(data.content).replace(/\n/g, '<br>');
-                        contentDiv.innerHTML = formattedContent;
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hide edit form
+                        hideEditReplyForm(replyId);
+
+                        // Update reply content
+                        const contentDiv = document.getElementById('reply-content-' + replyId);
+                        if (contentDiv) {
+                            // Convert line breaks to HTML
+                            const formattedContent = escapeHtml(data.content).replace(/\n/g, '<br>');
+                            contentDiv.innerHTML = formattedContent;
+                        }
+                    } else {
+                        alert('Error: ' + (data.error || 'Failed to update reply'));
                     }
-                } else {
-                    alert('Error: ' + (data.error || 'Failed to update reply'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to update reply. Please try again.');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update reply. Please try again.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
         }
     });
 });

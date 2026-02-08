@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load blog_extras %}
 
 {% block title %}Home - DevBlog{% endblock %}
 
@@ -17,21 +18,16 @@
                 <h1 class="hero-title">
                     Welcome to <span class="gradient-text">DevBlog</span>
                 </h1>
-                <p class="hero-subtitle">Discover the latest insights, tutorials, and stories from the developer community. Join thousands of developers sharing knowledge and building together.</p>
-                
+                <p class="hero-subtitle">Discover the latest insights, tutorials, and stories from the developer
+                    community. Join thousands of developers sharing knowledge and building together.</p>
+
                 <!-- Search Bar -->
                 <div class="search-container">
                     <form method="get" action="{% url 'blog:search' %}" class="search-form" id="searchForm">
                         <div class="search-input-wrapper">
                             <i class="fas fa-search search-icon"></i>
-                            <input 
-                                type="search" 
-                                name="q" 
-                                id="searchInput"
-                                class="search-input" 
-                                placeholder="Search posts by title or content..."
-                                autocomplete="off"
-                            >
+                            <input type="search" name="q" id="searchInput" class="search-input"
+                                placeholder="Search posts by title or content..." autocomplete="off">
                             <button type="submit" class="search-btn" aria-label="Search">
                                 <i class="fas fa-arrow-right"></i>
                             </button>
@@ -56,7 +52,8 @@
                         Get Started
                     </a>
                     {% endif %}
-                    <a href="{% url 'blog:about' %}" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.1); color: white; border: 2px solid rgba(255, 255, 255, 0.3);">
+                    <a href="{% url 'blog:about' %}" class="btn btn-secondary"
+                        style="background: rgba(255, 255, 255, 0.1); color: white; border: 2px solid rgba(255, 255, 255, 0.3);">
                         <i class="fas fa-info-circle"></i>
                         What is DevBlog?
                     </a>
@@ -92,20 +89,21 @@
                 </h2>
                 <p class="section-subtitle">
                     {% if has_explicit_featured %}
-                        Handpicked stories worth reading
+                    Handpicked stories worth reading
                     {% else %}
-                        Most popular posts from our community
+                    Most popular posts from our community
                     {% endif %}
                 </p>
             </div>
-            
+
             <div class="featured-grid">
                 {% for post in featured_posts %}
                 <article class="featured-card reveal">
                     {% if post.image %}
                     <div class="featured-image-wrapper">
                         <a href="{% url 'blog:post_detail' post.slug %}">
-                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="featured-image" loading="lazy">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="featured-image"
+                                loading="lazy">
                             <span class="featured-badge">Featured</span>
                         </a>
                     </div>
@@ -119,7 +117,7 @@
                         </a>
                     </div>
                     {% endif %}
-                    
+
                     <div class="featured-content">
                         <div class="featured-meta">
                             <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
@@ -128,7 +126,7 @@
                         <h3 class="featured-title">
                             <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
                         </h3>
-                        <p class="featured-excerpt">{{ post.content|truncatewords:30|striptags }}</p>
+                        <p class="featured-excerpt">{{ post.content|clean_excerpt:30 }}</p>
                         <div class="post-footer">
                             <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
                                 Read More <i class="fas fa-arrow-right"></i>
@@ -151,7 +149,8 @@
     {% if latest_posts %}
     <section class="content-section">
         <div class="container">
-            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+            <div class="section-header reveal"
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
                 <div>
                     <h2 class="section-title">
                         <i class="fas fa-newspaper"></i>
@@ -166,7 +165,7 @@
                 </a>
                 {% endif %}
             </div>
-            
+
             <div class="latest-grid">
                 {% for post in latest_posts %}
                 <article class="post-card reveal">
@@ -185,7 +184,7 @@
                         </a>
                     </div>
                     {% endif %}
-                    
+
                     <div class="post-content">
                         <div class="post-meta">
                             <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
@@ -194,7 +193,7 @@
                         <h3 class="post-title">
                             <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
                         </h3>
-                        <p class="post-excerpt">{{ post.content|truncatewords:20|striptags }}</p>
+                        <p class="post-excerpt">{{ post.content|clean_excerpt:20 }}</p>
                         <div class="post-footer">
                             <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
                                 Read More <i class="fas fa-arrow-right"></i>
@@ -217,7 +216,8 @@
     {% if recent_posts %}
     <section class="content-section">
         <div class="container">
-            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+            <div class="section-header reveal"
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
                 <div>
                     <h2 class="section-title">
                         <i class="fas fa-clock"></i>
@@ -232,7 +232,7 @@
                 </a>
                 {% endif %}
             </div>
-            
+
             <div class="recent-list">
                 {% for post in recent_posts %}
                 <article class="recent-item reveal">
@@ -251,7 +251,7 @@
                         </a>
                     </div>
                     {% endif %}
-                    
+
                     <div class="recent-content">
                         <div>
                             <h3 class="recent-title">
@@ -261,7 +261,7 @@
                                 <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
                                 <span><i class="far fa-calendar"></i> {{ post.created_at|date:"M d, Y" }}</span>
                             </div>
-                            <p class="recent-excerpt">{{ post.content|truncatewords:25|striptags }}</p>
+                            <p class="recent-excerpt">{{ post.content|clean_excerpt:25 }}</p>
                         </div>
                         <div class="post-footer">
                             <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
@@ -280,7 +280,8 @@
     {% if most_liked_posts %}
     <section class="content-section">
         <div class="container">
-            <div class="section-header reveal" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
+            <div class="section-header reveal"
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spacing-md);">
                 <div>
                     <h2 class="section-title">
                         <i class="fas fa-heart"></i>
@@ -295,7 +296,7 @@
                 </a>
                 {% endif %}
             </div>
-            
+
             <div class="most-liked-grid">
                 {% for post in most_liked_posts %}
                 <article class="post-card reveal">
@@ -314,7 +315,7 @@
                         </a>
                     </div>
                     {% endif %}
-                    
+
                     <div class="post-content">
                         <div class="post-meta">
                             <span><i class="fas fa-user-circle"></i> {{ post.author.username }}</span>
@@ -323,7 +324,7 @@
                         <h3 class="post-title">
                             <a href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
                         </h3>
-                        <p class="post-excerpt">{{ post.content|truncatewords:20|striptags }}</p>
+                        <p class="post-excerpt">{{ post.content|clean_excerpt:20 }}</p>
                         <div class="post-footer">
                             <a href="{% url 'blog:post_detail' post.slug %}" class="read-more-btn">
                                 Read More <i class="fas fa-arrow-right"></i>
@@ -355,7 +356,8 @@
                 <h3>No Posts Yet</h3>
                 <p>There are no published posts at the moment. Check back soon for new content!</p>
                 {% if user.is_authenticated %}
-                <a href="{% url 'blog:post_create' %}" class="read-more-btn" style="display: inline-flex; padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border-radius: var(--radius-sm);">
+                <a href="{% url 'blog:post_create' %}" class="read-more-btn"
+                    style="display: inline-flex; padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border-radius: var(--radius-sm);">
                     <i class="fas fa-plus-circle"></i> Create Your First Post
                 </a>
                 {% endif %}
